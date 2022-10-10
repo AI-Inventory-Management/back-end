@@ -23,7 +23,11 @@ class StoreContoller extends AbstractController {
       const stores = await db["Store"].findAll({
         attributes: ["id", "status", "latitude", "longitude"],
       });
-      res.status(200).send(stores);
+      let response_stores:any[] = [];
+      stores.forEach((store: { id: any; status: any; latitude: any; longitude: any; }) => {
+        response_stores.push({id: store.id, status: store.status, lat: store.latitude, lng: store.longitude})
+      });
+      res.status(200).send(response_stores);
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
