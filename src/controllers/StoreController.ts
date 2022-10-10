@@ -15,10 +15,10 @@ class StoreContoller extends AbstractController {
   }
 
   protected initRoutes(): void {
-    this.router.get("/getStores", this.getStores.bind(this));
+    this.router.get("/getStoreCoordinates", this.getStoreCoordinates.bind(this));
   }
 
-  private async getStores(req: Request, res: Response) {
+  private async getStoreCoordinates(req: Request, res: Response) {
     try {
       const stores = await db["Store"].findAll({
         attributes: ["id", "status", "latitude", "longitude"],
