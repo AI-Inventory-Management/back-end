@@ -22,5 +22,4 @@ export default abstract class AbstractController {
   }
 
   protected abstract initRoutes(): void;
-  protected abstract validateBody(type: any): any;
 }
