@@ -10,7 +10,7 @@ class StoreContoller extends AbstractController {
     if (this.instance) {
       return this.instance;
     }
-    this.instance = new StoreContoller("stores");
+    this.instance = new StoreContoller("store");
     return this.instance;
   }
 
