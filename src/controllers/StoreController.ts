@@ -25,7 +25,10 @@ class StoreContoller extends AbstractController {
       });
       let response_stores:any[] = [];
       stores.forEach((store: { id: any; status: any; latitude: any; longitude: any; }) => {
-        response_stores.push({id: store.id, status: store.status, lat: store.latitude, lng: store.longitude})
+        response_stores.push(
+          {
+            id: store.id, status: store.status, position: {lat: store.latitude, lng: store.longitude}
+          });
       });
       res.status(200).send(response_stores);
     } catch (error) {
