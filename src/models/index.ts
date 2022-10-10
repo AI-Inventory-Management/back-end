@@ -24,6 +24,20 @@ if (env === "development") {
       },
     }
   );
+} else if (env === "production") {
+  sequelize = new Sequelize(
+    config.production.database,
+    config.production.username,
+    config.production.password,
+    {
+      dialect: config.production.dialect,
+      host: config.production.host,
+      define: {
+        timestamps: false,
+        freezeTableName: true,
+      },
+    }
+  );
 }
 
 // Read each model from model directory

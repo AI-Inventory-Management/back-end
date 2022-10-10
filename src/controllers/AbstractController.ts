@@ -1,3 +1,13 @@
+/*
+AgentController.ts
+Authors:
+- 
+Creation date: 28/04/2022
+Last modification date: 01/06/2022
+
+Program that defines the controller for the Agent, its routes and functionalities
+*/
+
 import { Router } from "express";
 
 import ValidationErrorMiddleware from "../middlewares/validationError";
