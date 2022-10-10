@@ -61,7 +61,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: false,
       },
       municipality: {
-        type: DataTypes.STRING(30),
+        type: DataTypes.STRING(100),
         allowNull: false,
       },
       zip_code: {
