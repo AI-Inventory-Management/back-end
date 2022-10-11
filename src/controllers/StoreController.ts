@@ -23,11 +23,25 @@ class StoreContoller extends AbstractController {
       const stores = await db["Store"].findAll({
         attributes: ["id", "status", "latitude", "longitude"],
       });
+
+      /*
+      const colors = {
+        1: "Verde.png",
+        2: "Amarillo.png",
+        3: "Rojo.png"
+      };
+      */
+
+      const colors = ["Verde.png", "Amarillo.png", "Rojo.png"]
+
       let response_stores:any[] = [];
       stores.forEach((store: { id: any; status: any; latitude: any; longitude: any; }) => {
         response_stores.push(
           {
-            id: store.id, status: store.status, position: {lat: store.latitude, lng: store.longitude}
+            id: store.id, 
+            status: store.status, 
+            position: {lat: store.latitude, lng: store.longitude},
+            img: colors[store.status + 1]
           });
       });
       res.status(200).send(response_stores);
