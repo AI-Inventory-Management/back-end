@@ -5,47 +5,6 @@ import { timeStamp } from "console";
 import { checkSchema } from "express-validator";
 
 class StoreContoller extends AbstractController {
-  protected validateBody(type: "createStore" | "updateStore" | "deleteStore") {
-    switch (type) {
-      case "createStore":
-        return checkSchema({
-          status: {
-            in: "body",
-            isInt: {
-              options: { min: 1, max: 3 },
-              errorMessage: "Value must be between 1 and 3",
-            },
-          },
-          latitude: {
-            in: "body",
-            isFloat: true,
-            errorMessage: "Must be a float",
-          },
-          longitude: {
-            in: "body",
-            isFloat: true,
-            errorMessage: "Must be a float",
-          },
-          state: {
-            in: "body",
-            isString: true,
-            errorMessage: "Must be a string",
-          },
-          municipality: {
-            in: "body",
-            isString: true,
-            errorMessage: "Must be a string",
-          },
-          zip_code: {
-            isPostalCode: {
-              options: "MX",
-            },
-            errorMessage: "Must be a valid Zip Code",
-          },
-        });
-    }
-  }
-
   private static instance: StoreContoller;
 
   public static getInstance(): AbstractController {
@@ -56,12 +15,49 @@ class StoreContoller extends AbstractController {
     return this.instance;
   }
 
+  protected validateBody(type:|"createStore") {
+    switch (type) {
+      case "createStore":
+        return checkSchema({
+          status: {
+            isInt: {
+              options: { min: 1, max: 3 },
+              errorMessage: "Value must be between 1 and 3",
+            },
+          },
+          latitude: {
+            isFloat:{
+              errorMessage: "Must be a float"
+            }
+          },
+          longitude: {
+            isFloat:{
+              errorMessage: "Must be a float"
+            }
+          },
+          state: {
+            isString:{
+              errorMessage: "Must be a string"
+            }
+          },
+          municipality: {
+            isString:{
+              errorMessage: "Must be a string"
+            }
+          },
+          zip_code: {
+            isPostalCode: {
+              options: "MX",
+              errorMessage: "Must be a valid Zip Code",
+            },
+          },
+        });
+    }
+  }
+
   protected initRoutes(): void {
-    this.router.post("/createStore", this.postCreateStore.bind(this)); // Create
-    this.router.get(
-      "/getStoreCoordinates",
-      this.getStoreCoordinates.bind(this)
-    );
+    this.router.post("/createStore", this.validateBody("createStore"), this.handleErrors, this.postCreateStore.bind(this)); // Create
+    this.router.get("/getStoreCoordinates",this.getStoreCoordinates.bind(this));
   }
 
   // Create Store
