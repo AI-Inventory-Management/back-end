@@ -30,8 +30,8 @@ class Server {
         message: "The back is working",
       });
     });
-    controllers.forEach((controler: AbstractController) => {
-      this.app.use(`/${controler.prefix}`, controler.router);
+    controllers.forEach((controller: AbstractController) => {
+      this.app.use(`/${controller.prefix}`, controller.router);
     });
   }
 
