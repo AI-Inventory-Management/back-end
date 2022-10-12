@@ -3,13 +3,12 @@ import { PORT, NODE_ENV } from "./config";
 import express from "express";
 import cors from "cors";
 import StoreContoller from "./controllers/StoreController";
+import SaleController from "./controllers/SaleController";
 
 const app = new Server({
   port: PORT,
   middlewares: [express.json(), express.urlencoded({ extended: true }), cors()],
-  controllers: [
-    StoreContoller.getInstance()
-  ],
+  controllers: [StoreContoller.getInstance(), SaleController.getInstance()],
   env: NODE_ENV,
 });
 
