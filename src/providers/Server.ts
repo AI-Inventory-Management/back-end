@@ -42,7 +42,7 @@ class Server {
   }
 
   private async databases() {
-    await db.sequelize.sync({ force: false });
+    await db.sequelize.sync({ force: true });
   }
 
   public init(): void {
