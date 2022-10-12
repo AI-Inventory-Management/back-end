@@ -14,7 +14,7 @@ def home():
 def constant_messages():
     content = request.json
     print("printing data fetched on server:")
-    print(content['main_data'])
+    print(content)
     return jsonify({})
 
 @app.route('/initaialization_messages', methods=['GET', 'POST'])
