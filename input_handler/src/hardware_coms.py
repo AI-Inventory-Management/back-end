@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+import mysql.connector
 
 app = Flask(__name__)
 
@@ -13,8 +14,10 @@ def home():
 @app.route('/constant_messages', methods=['GET', 'POST'])
 def constant_messages():
     content = request.json
+    print("========================================================")
     print("printing data fetched on server:")
     print(content)
+    print("")
     return jsonify({})
 
 @app.route('/initaialization_messages', methods=['GET', 'POST'])
