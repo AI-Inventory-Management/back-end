@@ -1,5 +1,6 @@
 from distutils.command.upload import upload
 from os import curdir
+from typing import Dict
 from flask import Flask, render_template, request, jsonify
 import mysql.connector
 from numpy import product
@@ -28,32 +29,58 @@ class DbUploader():
             df = pd.concat([df, new_row]).reset_index(drop=True)
         return df
 
-    def handle_constant_message(self, message):
-        self.open_db_connection()
+    def stock_df_to_dict(self, df):
+        new_dict = {}
+        for i in df.index:
+            new_dict[df["product_name"][i]] = df["product_stock"][i]
+        print("prev stock dict is {d}".format(d=new_dict))
 
+    def update_store_products(self, prev, curr):
+        # check if new products exist on the new input and if
+        # they do we create a new inventory table for each
+        products_only_in_curr = [ product for product in curr.keys() if product not in prev.keys() ]
+        for product in products_only_in_curr:
+            print("creating new inventary registers")
+            pass # replace for inventary creation
+
+    def update_store_stock(self, prev, curr):
+        for product in curr.keys():
+            prev_vs_curr_stock = prev[product] - curr[product]
+            if prev_vs_curr_stock > 0:
+                # update inventory
+                print("updating inventory for {p}".format(p=product))
+                #register sell
+                print("registering a sell for {p}".format(p=product))
+                pass
+            elif prev_vs_curr_stock < 0:
+                # update inventory
+                print("updating inventory for {p}".format(p=product))
+                pass
+            
+
+    def fetch_prev_stock(self, store_id):
+        self.open_db_connection()
         fetch_stock_query = """SELECT Product.name, Inventory.stock
         FROM Inventory 
         INNER JOIN Product ON Inventory.id_product=Product.id 
-        WHERE Inventory.id_store = '{store_id}' and Product.name = '{product_name}'
-        """.format(store_id = 1, product_name='Coca-cola de lata 355ml')
+        WHERE Inventory.id_store = '{store_id}'
+        """.format(store_id = store_id)
         self.db_cursor.execute(fetch_stock_query)
         result = self.parse_query_result(result_columns=["product_name", "product_stock"])
-        #self.db_connection.commit()
-        print("\ncursor type:")
-        print(type(self.db_cursor))
-        print("\ncursor:")
-        print(self.db_cursor)
-        print("\nresult:")
-        print(result)
-
+        result = self.stock_df_to_dict(result)
         self.close_db_connection()
+        return result
+
+    def handle_constant_message(self, message):
+        prev_stock = self.fetch_prev_stock(store_id=message['store_id'])
+        self.update_store_products(prev_stock, message['content_count'])
+        prev_stock = self.fetch_prev_stock(store_id=message['store_id'])
+        self.update_store_stock(prev_stock, message['content_count'])
 
 app = Flask(__name__)
 app.secret_key = handler_keys.FLASK_APP_KEY
 
-recieved_data = {}
 uploader = DbUploader()
-uploader.handle_constant_message("str")
 
 @app.route('/', methods = ['GET'])
 def home():
@@ -62,6 +89,7 @@ def home():
 @app.route('/constant_messages', methods=['GET', 'POST'])
 def constant_messages():
     content = request.json
+    uploader.handle_constant_message(content)
     print("========================================================")
     print("printing data fetched on server:")
     print(content)
