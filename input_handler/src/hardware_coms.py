@@ -34,6 +34,7 @@ class DbUploader():
         for i in df.index:
             new_dict[df["product_name"][i]] = df["product_stock"][i]
         print("prev stock dict is {d}".format(d=new_dict))
+        return new_dict
 
     def update_store_products(self, prev, curr):
         # check if new products exist on the new input and if
@@ -89,6 +90,10 @@ def home():
 @app.route('/constant_messages', methods=['GET', 'POST'])
 def constant_messages():
     content = request.json
+    print("recieved type is:")
+    print(type(content))
+    print("recieved message is:")
+    print(content)
     uploader.handle_constant_message(content)
     print("========================================================")
     print("printing data fetched on server:")
