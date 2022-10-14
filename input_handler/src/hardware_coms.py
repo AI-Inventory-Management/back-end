@@ -84,8 +84,8 @@ class DbUploader():
             FROM Store 
             WHERE (Store.name='{store_name}' AND
             Store.status={store_status} AND
-            Store.latitude={store_latitude} AND
-            Store.longitude={store_longitude} AND
+            Store.latitude >= {store_latitude}-0.0001 AND Store.latitude <= {store_latitude}+0.0001 AND
+            Store.longitude >= {store_longitude}-0.0001 AND Store.longitude <= {store_longitude}+0.0001 AND
             Store.state='{store_state}' AND
             Store.municipality='{store_municipality}' AND
             Store.zip_code={store_zip_code} AND
