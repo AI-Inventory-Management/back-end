@@ -22,6 +22,8 @@ class DbUploader():
         self.db_connection = mysql.connector.connect(host=handler_keys.DB_HOST, user=handler_keys.DB_USER, passwd=handler_keys.DB_PASSWORD, database=handler_keys.DB_NAME)
         self.db_cursor = self.db_connection.cursor()
 
+    # =============================== HELPERS ===============================
+
     def parse_query_result(self, result_columns):
         df= pd.DataFrame(columns = result_columns)
         for register in self.db_cursor:
@@ -51,6 +53,8 @@ class DbUploader():
                 result += " OR "
         return result
 
+    # =============================== FETCH DATA FROM DB ===============================
+
     def fetch_product_ids(self, products:list)->dict:
         products_query = self.create_field_equals_or_chain_query("Product.name", products)
         product_ids_query = "SELECT Product.name, Product.id FROM Product WHERE {q}".format(q = products_query)
@@ -61,61 +65,6 @@ class DbUploader():
         product_ids_result = self.two_cols_df_to_dict(product_ids_result, "product_name", "product_id")
         self.close_db_connection()
         return product_ids_result
-
-    def update_store_products(self, prev:dict, curr:dict, id_store:str):
-        # check if new products exist on the new input and if
-        # they do we create a new inventory table for each with defaul max stock 
-        # and min stock values
-        products_only_in_curr = [ product for product in curr.keys() if product not in prev.keys() ]
-        if len(products_only_in_curr) == 0:
-            return
-        # if there are products in current stock that are not in prev stock we fetch the product ids for each        
-        product_ids_result = self.fetch_product_ids(products_only_in_curr)
-
-        # Once we fetch the product ids of products only in current stock we create a new inventary for each of this products
-
-        for product in products_only_in_curr:
-            print("creating new inventary register for {p}".format(p=product))
-            inventary_creation_query = "INSERT INTO Inventory(id_product, id_store, stock) VALUES ({product_id}, {store_id}, {s}) ".format(product_id=product_ids_result[product], store_id=id_store, s=curr[product])
-            
-            self.open_db_connection()
-            self.db_cursor.execute(inventary_creation_query)
-            self.db_connection.commit()
-            self.close_db_connection()            
-
-    def update_inventory(self, store_id, product_id, new_stock):
-        inventory_update_query = "UPDATE Inventory SET Inventory.stock={new_stock} WHERE Inventory.id_store={store_id} AND Inventory.id_product={product_id}".format(new_stock=new_stock, store_id=store_id, product_id=product_id)
-        self.open_db_connection()
-        self.db_cursor.execute(inventory_update_query)
-        self.db_connection.commit()
-        self.close_db_connection()
-
-    def register_sale(self, product_id, store_id, timestamp):
-        register_sale_query = "INSERT INTO Sale(id_product, id_store, timestamp) VALUES ({product_id}, {store_id}, {t})".format(product_id=product_id, store_id=store_id, t=timestamp)
-        self.open_db_connection()
-        self.db_cursor.execute(register_sale_query)
-        self.db_connection.commit()
-        self.close_db_connection()
-
-    def update_store_stock(self, prev, curr, id_store:str, timestamp:str):
-        current_products = list(curr.keys())
-        product_ids = self.fetch_product_ids(current_products)
-
-        for product in current_products:
-            prev_vs_curr_stock = prev[product] - curr[product]
-            product_id = product_ids[product]
-            product_stock = curr[product]
-            if prev_vs_curr_stock > 0:
-                # update inventory
-                print("updating inventory for {p}".format(p=product))
-                self.update_inventory(store_id=id_store, product_id=product_id, new_stock=product_stock)
-                #register sale
-                print("registering a sell for {p}".format(p=product))
-                self.register_sale(product_id=product_id, store_id=id_store, timestamp=timestamp)
-            elif prev_vs_curr_stock < 0:
-                # update inventory                
-                print("updating inventory for {p}".format(p=product))
-                self.update_inventory(store_id=id_store, product_id=product_id, new_stock=product_stock)            
 
     def fetch_prev_stock(self, store_id):
         self.open_db_connection()
@@ -129,12 +78,139 @@ class DbUploader():
         result = self.two_cols_df_to_dict(result, "product_name", "product_stock")
         self.close_db_connection()
         return result
+    
+    def fetch_store_id(self, store_name, store_status, store_latitude, store_longitude, store_state, store_municipality, store_zip_code, store_address):        
+        store_id_query = """SELECT Store.name, Store.id 
+            FROM Store 
+            WHERE (Store.name='{store_name}' AND
+            Store.status={store_status} AND
+            Store.latitude={store_latitude} AND
+            Store.longitude={store_longitude} AND
+            Store.state='{store_state}' AND
+            Store.municipality='{store_municipality}' AND
+            Store.zip_code={store_zip_code} AND
+            Store.address='{store_address}')
+            """.format(
+                store_name=store_name,
+                store_status=store_status,
+                store_latitude=store_latitude,
+                store_longitude=store_longitude,
+                store_state=store_state,
+                store_municipality=store_municipality,
+                store_zip_code=store_zip_code,
+                store_address=store_address)
+        self.open_db_connection()
+        self.db_cursor.execute(store_id_query)
+        store_ids_result = self.parse_query_result(result_columns=["store_name", "store_id"])
+        print("store id query is:")
+        print(store_id_query)
+        store_ids_result = self.two_cols_df_to_dict(store_ids_result, "store_name", "store_id")
+        self.close_db_connection()
+        return store_ids_result
+
+    # =============================== GENERATE NEW REGISTERS ON DB ===============================
+
+    def register_new_store(self, store_name, store_status, store_latitude, store_longitude, store_state, store_municipality, store_zip_code, store_address):        
+        register_store_query = """INSERT INTO Store(name, status, latitude, longitude, state, municipality, zip_code, address)
+            VALUES ('{store_name}', {store_status}, {store_latitude}, {store_longitude}, '{store_state}', '{store_municipality}', {store_zip_code}, '{store_address}')
+            """.format(
+            store_name=store_name,
+            store_status=store_status,
+            store_latitude=store_latitude,
+            store_longitude=store_longitude,
+            store_state=store_state,
+            store_municipality=store_municipality,
+            store_zip_code=store_zip_code,
+            store_address=store_address)
+        self.open_db_connection()
+        self.db_cursor.execute(register_store_query)
+        self.db_connection.commit()
+        self.close_db_connection()
+
+    def register_new_inventory(self, product_id, store_id, stock, min_stock, max_stock):
+        inventary_creation_query = """INSERT INTO Inventory(id_product, id_store, stock, min_stock, max_stock)
+            VALUES ({product_id}, {store_id}, {stock}, {min_stock}, {max_stock})""".format(
+            product_id=product_id,
+            store_id=store_id,
+            stock=stock,
+            min_stock=min_stock,
+            max_stock=max_stock)        
+        self.open_db_connection()
+        self.db_cursor.execute(inventary_creation_query)
+        self.db_connection.commit()
+        self.close_db_connection()
+
+    def register_new_sale(self, product_id, store_id, timestamp):
+        register_sale_query = "INSERT INTO Sale(id_product, id_store, timestamp) VALUES ({product_id}, {store_id}, {t})".format(product_id=product_id, store_id=store_id, t=timestamp)
+        self.open_db_connection()
+        self.db_cursor.execute(register_sale_query)
+        self.db_connection.commit()
+        self.close_db_connection()
+
+    # =============================== UPDATE REGISTERS ON DB ===============================
+
+    def update_inventory(self, store_id, product_id, new_stock):
+        inventory_update_query = "UPDATE Inventory SET Inventory.stock={new_stock} WHERE Inventory.id_store={store_id} AND Inventory.id_product={product_id}".format(new_stock=new_stock, store_id=store_id, product_id=product_id)
+        self.open_db_connection()
+        self.db_cursor.execute(inventory_update_query)
+        self.db_connection.commit()
+        self.close_db_connection()
+
+    # =============================== MAIN HANDLERS ===============================
+
+    def handle_cahanges_on_store_products(self, prev:dict, curr:dict, id_store:str):
+        # check if new products exist on the new input and if
+        # they do we create a new inventory table for each with defaul max stock 
+        # and min stock values
+        products_only_in_curr = [ product for product in curr.keys() if product not in prev.keys() ]
+        if len(products_only_in_curr) == 0:
+            return
+        # if there are products in current stock that are not in prev stock we fetch the product ids for each        
+        product_ids_result = self.fetch_product_ids(products_only_in_curr)
+
+        # Once we fetch the product ids of products only in current stock we create a new inventary for each of this products
+
+        for product in products_only_in_curr:
+            print("creating new inventary register for {p}".format(p=product))
+            self.register_new_inventory(product_ids_result[product], id_store, curr[product], 0, 0) 
+            # TODO: change the min max stock args to non existing product flag       
+
+    def handle_changes_on_store_stock(self, prev, curr, id_store:str, timestamp:str):
+        current_products = list(curr.keys())
+        product_ids = self.fetch_product_ids(current_products)
+
+        for product in current_products:
+            prev_vs_curr_stock = prev[product] - curr[product]
+            product_id = product_ids[product]
+            product_stock = curr[product]
+            if prev_vs_curr_stock > 0:
+                # update inventory
+                print("updating inventory for {p}".format(p=product))
+                self.update_inventory(store_id=id_store, product_id=product_id, new_stock=product_stock)
+                #register sale
+                print("registering a sell for {p}".format(p=product))
+                self.register_new_sale(product_id=product_id, store_id=id_store, timestamp=timestamp)
+            elif prev_vs_curr_stock < 0:
+                # update inventory                
+                print("updating inventory for {p}".format(p=product))
+                self.update_inventory(store_id=id_store, product_id=product_id, new_stock=product_stock)            
 
     def handle_constant_message(self, message):
         prev_stock = self.fetch_prev_stock(store_id=message['store_id'])
-        self.update_store_products(prev_stock, message['content_count'], message['store_id'])
+        self.handle_cahanges_on_store_products(prev_stock, message['content_count'], message['store_id'])
         prev_stock = self.fetch_prev_stock(store_id=message['store_id'])
-        self.update_store_stock(prev_stock, message['content_count'], message['store_id'], message['timestamp'])
+        self.handle_changes_on_store_stock(prev_stock, message['content_count'], message['store_id'], message['timestamp'])
+
+    def handle_initialization_message(self, message):
+        self.register_new_store(message["store_name"], 1, message["store_latitude"], message["store_longitude"], message["store_state"], message["store_municipality"], message["store_zip_code"], message["store_address"])
+        store_products = list(message["store_curr_stock"].keys())
+        store_products_ids = self.fetch_product_ids(store_products)
+        store_id = self.fetch_store_id(message["store_name"], 1, message["store_latitude"], message["store_longitude"], message["store_state"], message["store_municipality"], message["store_zip_code"], message["store_address"])
+        print("fetch store id result is:")
+        print(store_id)
+        for product in store_products:
+            self.register_new_inventory(store_products_ids[product], store_id[message["store_name"]], message["store_curr_stock"][product], message["store_min_stocks"][product], message["store_max_stocks"][product])
+        return store_id
 
 app = Flask(__name__)
 app.secret_key = handler_keys.FLASK_APP_KEY
@@ -157,7 +233,13 @@ def constant_messages():
 
 @app.route('/initaialization_messages', methods=['GET', 'POST'])
 def initialization_messages():
-    pass
+    content = request.json    
+    uploader.handle_initialization_message(content)
+    print("========================================================")
+    print("printing data fetched on server:")
+    print(content)
+    print("")
+    return jsonify({})
 
 if __name__ == '__main__':
 	app.run(host = '0.0.0.0',port = 7000, debug = True)
