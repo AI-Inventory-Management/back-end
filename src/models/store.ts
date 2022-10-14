@@ -9,7 +9,7 @@ interface StoreAttributes {
   longitude: number;
   state: string;
   municipality: string;
-  zip_code: number;
+  zip_code: string;
   address: string;
 }
 
@@ -22,7 +22,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
     longitude!: number;
     state!: string;
     municipality!: string;
-    zip_code!: number;
+    zip_code!: string;
     address!: string;
 
     static associate(models: any) {
@@ -72,7 +72,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
         allowNull: false,
       },
       zip_code: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.STRING(10),
         allowNull: false,
       },
       address: {
