@@ -106,11 +106,16 @@ class StoreContoller extends AbstractController {
     try {
       if (!req.params.storeId) {
         res.status(400).send({message: "No store id"});
+        return;
       }
       const storeData = await db["Store"].findAll({
         where: { id: req.params.storeId },
         attributes: ["id", "status", "address"],
       });
+      if (await storeData.length <= 0) {
+        res.status(400).send({message: "No store associated to given id"});
+        return;
+      }
       const stock = await db.sequelize.query(`SELECT Inventory.id_product, Product.name, Inventory.stock
                                     FROM Inventory, Product
                                     WHERE Inventory.id_store = ${req.params.storeId} AND Inventory.id_product = Product.id`,
