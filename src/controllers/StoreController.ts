@@ -3,6 +3,7 @@ import AbstractController from "./AbstractController";
 import db from "../models";
 import { timeStamp } from "console";
 import { checkSchema } from "express-validator";
+import { QueryTypes } from "sequelize";
 
 class StoreContoller extends AbstractController {
   private static instance: StoreContoller;
@@ -58,6 +59,7 @@ class StoreContoller extends AbstractController {
   protected initRoutes(): void {
     this.router.post("/createStore", this.validateBody("createStore"), this.handleErrors, this.postCreateStore.bind(this)); // Create
     this.router.get("/getStoreCoordinates",this.getStoreCoordinates.bind(this));
+    this.router.get("/getStoreData/:storeId", this.getStoreData.bind(this));
   }
 
   // Create Store
@@ -99,5 +101,46 @@ class StoreContoller extends AbstractController {
       }
     }
   }
+
+  private async getStoreData(req: Request, res: Response) {
+    try {
+      if (!req.params.storeId) {
+        res.status(400).send({message: "No store id"});
+      }
+      else {
+        const storeData = await db["Store"].findAll({
+          where: { id: req.params.storeId },
+          attributes: ["id", "status", "address"],
+        });
+        const stock = await db.sequelize.query(`SELECT Inventory.id_product, Product.name, Inventory.stock
+                                      FROM Inventory, Product
+                                      WHERE Inventory.id_store = ${req.params.storeId} AND Inventory.id_product = Product.id`,
+                                      { type: QueryTypes.SELECT });
+
+        const top_sales = await db.sequelize.query(`SELECT Sale.id_product, Product.name, count(Sale.id) as sales
+                                          FROM Sale, Product
+                                          WHERE Sale.id_store = ${req.params.storeId} AND Product.id = Sale.id_product
+                                          GROUP BY Sale.id_product
+                                          ORDER BY count(Sale.id_product) desc
+                                          LIMIT 10`,
+                                      { type: QueryTypes.SELECT })
+        const data = {
+          id: storeData[0].id,
+          status: storeData[0].status,
+          address: storeData[0].address,
+          stock: stock,
+          sales: top_sales
+        };
+        res.status(200).send(data);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
 }
 export default StoreContoller;
