@@ -104,16 +104,12 @@ class StoreContoller extends AbstractController {
 
   private async getStoreData(req: Request, res: Response) {
     try {
-      if (!req.params.storeId) {
-        res.status(400).send({message: "No store id"});
-        return;
-      }
-      const storeData = await db["Store"].findAll({
+      const storeData = await db["Store"].findOne({
         where: { id: req.params.storeId },
         attributes: ["id", "status", "address"],
       });
-      if (await storeData.length <= 0) {
-        res.status(400).send({message: "No store associated to given id"});
+      if (!storeData) {
+        res.status(400).send({message: "No store associated to id"});
         return;
       }
       const stock = await db.sequelize.query(`SELECT Inventory.id_product, Product.name, Inventory.stock
@@ -129,9 +125,9 @@ class StoreContoller extends AbstractController {
                                         LIMIT 10`,
                                     { type: QueryTypes.SELECT })
       const data = {
-        id: storeData[0].id,
-        status: storeData[0].status,
-        address: storeData[0].address,
+        id: storeData.id,
+        status: storeData.status,
+        address: storeData.address,
         stock: stock,
         sales: top_sales
       };
