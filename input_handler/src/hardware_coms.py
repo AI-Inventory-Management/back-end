@@ -13,7 +13,7 @@ class DbUploader():
     def __init__(self) -> None:
         self.db_connection = None
         self.db_cursor = None
-
+        
     def close_db_connection(self):
         self.db_cursor.close()
         self.db_connection.close()
@@ -78,6 +78,33 @@ class DbUploader():
         result = self.two_cols_df_to_dict(result, "product_name", "product_stock")
         self.close_db_connection()
         return result
+    
+    def fetch_min_stock(self, store_id):
+        self.open_db_connection()
+        fetch_min_stock_query = """SELECT Product.name, Inventory.min_stock
+        FROM Inventory
+        INNER JOIN Product ON Inventory.id_product = Product.id
+        WHERE Inventory.id_store = '{store_id}'
+        """.format(store_id = store_id)
+        self.db_cursor.execute(fetch_min_stock_query)
+        result = self.parse_query_result(result_columns=["product_name", "product_min_stock"])
+        result = self.two_cols_df_to_dict(result, "product_name", "product_min_stock")
+        self.close_db_connection()
+        return result
+        
+    def fetch_max_stock(self, store_id):
+        self.open_db_connection()
+        fetch_max_stock_query = """SELECT Product.name, Inventory.max_stock
+        FROM Inventory
+        INNER JOIN Product ON Inventory.id_product = Product.id
+        WHERE Inventory.id_store = '{store_id}'
+        """.format(store_id = store_id)
+        self.db_cursor.execute(fetch_max_stock_query)
+        result = self.parse_query_result(result_columns=["product_name", "product_min_stock"])
+        result = self.two_cols_df_to_dict(result, "product_name", "product_min_stock")
+        self.close_db_connection()
+        return result
+        
     
     def fetch_store_id(self, store_name, store_status, store_latitude, store_longitude, store_state, store_municipality, store_zip_code, store_address):        
         store_id_query = """SELECT Store.name, Store.id 
@@ -156,8 +183,34 @@ class DbUploader():
         self.db_connection.commit()
         self.close_db_connection()
 
+    def update_store_status(self, store_id, status):
+        status_update_query = "UPDATE Store SET Store.status = {status} WHERE Store.id = {store_id}".format(status = status, store_id = store_id)
+        self.open_db_connection()
+        self.db_cursor.execute(status_update_query)
+        self.db_connection.commit()
+        self.close_db_connection()
     # =============================== MAIN HANDLERS ===============================
-
+    
+    def handle_change_on_status(self, store_id, mins_stock, maxs_stock, stocks):
+        norm = []
+        
+        current_products = list(stocks.keys())
+        for label in current_products:
+            norm.append((stocks[label] - mins_stock[label])/(maxs_stock[label] - mins_stock[label]))
+            
+        mean = sum(norm) / len(norm)
+        
+        status = 0
+        
+        if mean > 0.75:
+            status = 1
+        elif mean > 0.25:
+            status = 2
+        else:
+            status = 3
+        
+        self.update_store_status(id_store = store_id, status = status)
+        
     def handle_cahanges_on_store_products(self, prev:dict, curr:dict, id_store:str):
         # check if new products exist on the new input and if
         # they do we create a new inventory table for each with defaul max stock 
@@ -174,15 +227,17 @@ class DbUploader():
             print("creating new inventary register for {p}".format(p=product))
             self.register_new_inventory(product_ids_result[product], id_store, curr[product], 0, 0) 
             # TODO: change the min max stock args to non existing product flag       
-
+    
     def handle_changes_on_store_stock(self, prev, curr, id_store:str, timestamp:str):
         current_products = list(curr.keys())
         product_ids = self.fetch_product_ids(current_products)
-
+        
         for product in current_products:
             prev_vs_curr_stock = prev[product] - curr[product]
             product_id = product_ids[product]
             product_stock = curr[product]
+            
+            
             if prev_vs_curr_stock > 0:
                 # update inventory
                 print("updating inventory for {p}".format(p=product))
@@ -193,14 +248,18 @@ class DbUploader():
             elif prev_vs_curr_stock < 0:
                 # update inventory                
                 print("updating inventory for {p}".format(p=product))
-                self.update_inventory(store_id=id_store, product_id=product_id, new_stock=product_stock)            
+                self.update_inventory(store_id=id_store, product_id=product_id, new_stock=product_stock) 
+        
 
     def handle_constant_message(self, message):
         prev_stock = self.fetch_prev_stock(store_id=message['store_id'])
         self.handle_cahanges_on_store_products(prev_stock, message['content_count'], message['store_id'])
         prev_stock = self.fetch_prev_stock(store_id=message['store_id'])
         self.handle_changes_on_store_stock(prev_stock, message['content_count'], message['store_id'], message['timestamp'])
-
+        mins = self.fetch_min_stock(store_id = message["store_id"])
+        maxs = self.fetch_max_stock(store_id = message["store_id"])
+        self.handle_change_on_status(store_id = message["store_id"], mins_stock = mins, maxs_stock = maxs, stocks = message["content_count"])
+        
     def handle_initialization_message(self, message):
         self.register_new_store(message["store_name"], 1, message["store_latitude"], message["store_longitude"], message["store_state"], message["store_municipality"], message["store_zip_code"], message["store_address"])
         store_products = list(message["store_curr_stock"].keys())
