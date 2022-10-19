@@ -84,7 +84,7 @@ class StoreContoller extends AbstractController {
   private async getStoreCoordinates(req: Request, res: Response) {
     try {
       const stores = await db["Store"].findAll({
-        attributes: ["id", "status", "latitude", "longitude"],
+        attributes: ["id_store", "status", "latitude", "longitude"],
       });
 
       let response_stores: any[] = [];
@@ -111,7 +111,7 @@ class StoreContoller extends AbstractController {
     try {
       const storeData = await db["Store"].findOne({
         where: { id: req.params.storeId },
-        attributes: ["id", "status", "address"],
+        attributes: ["id_store", "status", "address"],
       });
       if (!storeData) {
         res.status(400).send({message: "No store associated to id"});
