@@ -145,7 +145,7 @@ class StoreContoller extends AbstractController {
         { type: QueryTypes.SELECT }
       );
       const data = {
-        id: storeData.id,
+        id: storeData.id_store,
         status: storeData.status,
         address: storeData.address,
         stock: stock,
