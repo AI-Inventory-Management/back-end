@@ -2,7 +2,7 @@
 import { Model } from "sequelize";
 
 interface ProductAttributes {
-  id: number;
+  id_product: number;
   ean: string;
   name: string;
   price: number;
@@ -11,7 +11,7 @@ interface ProductAttributes {
 
 module.exports = (sequelize: any, DataTypes: any) => {
   class Product extends Model<ProductAttributes> implements ProductAttributes {
-    id!: number;
+    id_product!: number;
     ean!: string;
     name!: string;
     price!: number;
@@ -29,7 +29,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
   }
   Product.init(
     {
-      id: {
+      id_product: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         autoIncrement: true,

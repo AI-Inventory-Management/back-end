@@ -2,7 +2,7 @@
 import { Model } from "sequelize";
 
 interface SaleAttributes {
-  id: number;
+  id_sale: number;
   timestamp: string;
   id_product: number;
   id_store: number;
@@ -10,7 +10,7 @@ interface SaleAttributes {
 
 module.exports = (sequelize: any, DataTypes: any) => {
   class Sale extends Model<SaleAttributes> implements SaleAttributes {
-    id!: number;
+    id_sale!: number;
     timestamp!: string;
     id_product!: number;
     id_store!: number;
@@ -18,16 +18,16 @@ module.exports = (sequelize: any, DataTypes: any) => {
     static associate(models: any) {
       // Associations
       Sale.belongsTo(models.Product, {
-        foreignKey: "id",
+        foreignKey: "id_product",
       });
       Sale.belongsTo(models.Store, {
-        foreignKey: "id",
+        foreignKey: "id_store",
       });
     }
   }
   Sale.init(
     {
-      id: {
+      id_sale: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         autoIncrement: true,
