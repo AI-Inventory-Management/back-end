@@ -3,7 +3,9 @@ import AbstractController from "./AbstractController";
 import db from "../models";
 import { timeStamp } from "console";
 import { checkSchema } from "express-validator";
-import { QueryTypes } from "sequelize";
+import { QueryTypes, Sequelize } from "sequelize";
+import { idText } from "typescript";
+import { DB_NAME } from "../config";
 
 class StoreContoller extends AbstractController {
   private static instance: StoreContoller;
@@ -60,6 +62,9 @@ class StoreContoller extends AbstractController {
     this.router.post("/createStore", this.validateBody("createStore"), this.handleErrors, this.postCreateStore.bind(this)); // Create
     this.router.get("/getStoreCoordinates",this.getStoreCoordinates.bind(this));
     this.router.get("/getStoreData/:storeId", this.getStoreData.bind(this));
+
+    //Filter
+    this.router.get("/getAllStores", this.getAllStores.bind(this));
   }
 
   // Create Store
@@ -141,5 +146,20 @@ class StoreContoller extends AbstractController {
     }
   }
 
+
+  private async getAllStores(req: Request, res: Response) {
+    try {
+      const stores = await db.sequelize.query(`Select id_store,name from Store where status = ${req.query.status} and id_store = ${req.query.id} and name = ${req.query.name} and state = ${req.query.state} and municipality = ${req.query.municipality}`,{ type: QueryTypes.SELECT })
+      res.status(200).send(stores);
+
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
 }
+
 export default StoreContoller;
