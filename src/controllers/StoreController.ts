@@ -104,7 +104,7 @@ class StoreContoller extends AbstractController {
           longitude: any;
         }) => {
           response_stores.push({
-            id: store.id_store,
+            id_store: store.id_store,
             status: store.status,
             position: { lat: store.latitude, lng: store.longitude },
           });
