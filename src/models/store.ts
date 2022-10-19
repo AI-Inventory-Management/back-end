@@ -2,7 +2,7 @@
 import { Model } from "sequelize";
 
 interface StoreAttributes {
-  id: number;
+  id_store: number;
   name:string;
   status: number;
   latitude: number;
@@ -15,7 +15,7 @@ interface StoreAttributes {
 
 module.exports = (sequelize: any, DataTypes: any) => {
   class Store extends Model<StoreAttributes> implements StoreAttributes {
-    id!: number;
+    id_store!: number;
     name!:string;
     status!: number;
     latitude!: number;
@@ -40,7 +40,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
   }
   Store.init(
     {
-      id: {
+      id_store: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         autoIncrement: true,

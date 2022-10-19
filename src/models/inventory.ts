@@ -2,7 +2,7 @@
 import { Model } from "sequelize";
 
 interface InventoryAttributes {
-  id: number;
+  id_inventory: number;
   id_product: number;
   id_store: number;
   stock: number;
@@ -15,7 +15,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
     extends Model<InventoryAttributes>
     implements InventoryAttributes
   {
-    id!: number;
+    id_inventory!: number;
     id_product!: number;
     id_store!: number;
     stock!: number;
@@ -25,16 +25,16 @@ module.exports = (sequelize: any, DataTypes: any) => {
     static associate(models: any) {
       // Associations
       Inventory.belongsTo(models.Product, {
-        foreignKey: "id",
+        foreignKey: "id_product",
       });
       Inventory.belongsTo(models.Store, {
-        foreignKey: "id",
+        foreignKey: "id_store",
       });
     }
   }
   Inventory.init(
     {
-      id: {
+      id_inventory: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         autoIncrement: true,

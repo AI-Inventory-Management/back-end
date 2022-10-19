@@ -2,7 +2,7 @@
 import { Model } from "sequelize";
 
 interface NotificationAttributes {
-  id: number;
+  id_notification: number;
   id_store: number;
   notification_text: string;
   timestamp: string;
@@ -13,7 +13,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
     extends Model<NotificationAttributes>
     implements NotificationAttributes
   {
-    id!: number;
+    id_notification!: number;
     id_store!: number;
     notification_text!: string;
     timestamp!: string;
@@ -21,13 +21,13 @@ module.exports = (sequelize: any, DataTypes: any) => {
     static associate(models: any) {
       // Associations
       Notification.belongsTo(models.Store, {
-        foreignKey: "id",
+        foreignKey: "id_store",
       });
     }
   }
   Notification.init(
     {
-      id: {
+      id_notification: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         autoIncrement: true,
