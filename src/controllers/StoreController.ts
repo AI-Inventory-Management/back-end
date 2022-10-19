@@ -123,7 +123,7 @@ class StoreContoller extends AbstractController {
   private async getStoreData(req: Request, res: Response) {
     try {
       const storeData = await db["Store"].findOne({
-        where: { id: req.params.storeId },
+        where: { id_store: req.params.storeId },
         attributes: ["id_store", "status", "address"],
       });
       if (!storeData) {
