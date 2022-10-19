@@ -124,7 +124,7 @@ class StoreContoller extends AbstractController {
     try {
       const storeData = await db["Store"].findOne({
         where: { id: req.params.storeId },
-        attributes: ["id", "status", "address"],
+        attributes: ["id_store", "status", "address"],
       });
       if (!storeData) {
         res.status(400).send({ message: "No store associated to id" });
@@ -133,14 +133,12 @@ class StoreContoller extends AbstractController {
       const stock = await db.sequelize.query(
         `SELECT Inventory.id_product, Product.name, Inventory.stock
                                     FROM Inventory, Product
-                                    WHERE Inventory.id_store = ${req.params.storeId} AND Inventory.id_product = Product.id`,
-        { type: QueryTypes.SELECT }
-      );
+                                    WHERE Inventory.id_store = ${req.params.storeId} AND Inventory.id_product = Product.id_product`,
+                                    { type: QueryTypes.SELECT });
 
-      const top_sales = await db.sequelize.query(
-        `SELECT Sale.id_product, Product.name, count(Sale.id) as sales
+      const top_sales = await db.sequelize.query(`SELECT Sale.id_product, Product.name, count(Sale.id_sale) as sales
                                         FROM Sale, Product
-                                        WHERE Sale.id_store = ${req.params.storeId} AND Product.id = Sale.id_product
+                                        WHERE Sale.id_store = ${req.params.storeId} AND Product.id_product = Sale.id_product
                                         GROUP BY Sale.id_product
                                         ORDER BY count(Sale.id_product) desc
                                         LIMIT 10`,
