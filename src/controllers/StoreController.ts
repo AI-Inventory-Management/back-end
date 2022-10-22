@@ -181,8 +181,10 @@ class StoreContoller extends AbstractController {
   }
 
   private async postNewProduct(req: Request, res: Response) {
+    console.log(req.body)
     try {
-      await await db["Store"].create({ name: req.query.name, description: req.query.description, price: req.query.price, ean: req.query.ean})
+      await db["Product"].create({ name: req.body.name, description: req.body.description, price: req.body.price, ean: req.body.ean})
+      res.send({message: "success"})
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
