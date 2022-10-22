@@ -73,6 +73,9 @@ class StoreContoller extends AbstractController {
 
     //Filter
     this.router.get("/getAllStores", this.getAllStores.bind(this));
+
+    //Product
+    this.router.post('/postNewProduct', this.postNewProduct.bind(this));
   }
 
   // Create Store
@@ -176,6 +179,19 @@ class StoreContoller extends AbstractController {
       }
     }
   }
+
+  private async postNewProduct(req: Request, res: Response) {
+    try {
+      await await db["Store"].create({ name: req.query.name, description: req.query.description, price: req.query.price, ean: req.query.ean})
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+  
 }
 
 export default StoreContoller;
