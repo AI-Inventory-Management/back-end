@@ -135,15 +135,16 @@ class StoreContoller extends AbstractController {
       }
       const stock = await db.sequelize.query(
         `SELECT Inventory.id_product, Product.name, Inventory.stock
-                                    FROM Inventory, Product
-                                    WHERE Inventory.id_store = ${req.params.storeId} AND Inventory.id_product = Product.id_product`,
+          FROM Inventory, Product
+          WHERE Inventory.id_store = ${req.params.storeId} AND Inventory.id_product = Product.id_product
+          ORDER BY Inventory.stock DESC`,
                                     { type: QueryTypes.SELECT });
 
       const top_sales = await db.sequelize.query(`SELECT Sale.id_product, Product.name, count(Sale.id_sale) as sales
                                         FROM Sale, Product
                                         WHERE Sale.id_store = ${req.params.storeId} AND Product.id_product = Sale.id_product
                                         GROUP BY Sale.id_product
-                                        ORDER BY count(Sale.id_product) desc
+                                        ORDER BY count(Sale.id_product) DESC
                                         LIMIT 10`,
         { type: QueryTypes.SELECT }
       );
