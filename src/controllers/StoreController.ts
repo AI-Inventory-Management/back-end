@@ -76,6 +76,10 @@ class StoreContoller extends AbstractController {
 
     //Product
     this.router.post("/postNewProduct", this.postNewProduct.bind(this));
+    this.router.get(
+      "/getAllProductsNames",
+      this.getAllProductsNames.bind(this)
+    );
   }
 
   // Create Store
@@ -194,6 +198,21 @@ class StoreContoller extends AbstractController {
         ean: req.body.ean,
       });
       res.send({ message: "success" });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async getAllProductsNames(req: Request, res: Response) {
+    try {
+      const names = await db["Product"].findAll({
+        attributes: [["name", "label"]],
+      });
+      res.send(names);
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
