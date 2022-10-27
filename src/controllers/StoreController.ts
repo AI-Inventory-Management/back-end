@@ -75,7 +75,7 @@ class StoreContoller extends AbstractController {
     this.router.get("/getAllStores", this.getAllStores.bind(this));
 
     //Product
-    this.router.post('/postNewProduct', this.postNewProduct.bind(this));
+    this.router.post("/postNewProduct", this.postNewProduct.bind(this));
   }
 
   // Create Store
@@ -127,7 +127,7 @@ class StoreContoller extends AbstractController {
     try {
       const storeData = await db["Store"].findOne({
         where: { id_store: req.params.storeId },
-        attributes: ["id_store", "status", "address"],
+        attributes: ["id_store", "status", "address", "name"],
       });
       if (!storeData) {
         res.status(400).send({ message: "No store associated to id" });
@@ -138,9 +138,11 @@ class StoreContoller extends AbstractController {
           FROM Inventory, Product
           WHERE Inventory.id_store = ${req.params.storeId} AND Inventory.id_product = Product.id_product
           ORDER BY Inventory.stock DESC`,
-                                    { type: QueryTypes.SELECT });
+        { type: QueryTypes.SELECT }
+      );
 
-      const top_sales = await db.sequelize.query(`SELECT Sale.id_product, Product.name, count(Sale.id_sale) as sales
+      const top_sales = await db.sequelize.query(
+        `SELECT Sale.id_product, Product.name, count(Sale.id_sale) as sales
                                         FROM Sale, Product
                                         WHERE Sale.id_store = ${req.params.storeId} AND Product.id_product = Sale.id_product
                                         GROUP BY Sale.id_product
@@ -152,6 +154,7 @@ class StoreContoller extends AbstractController {
         id: storeData.id_store,
         status: storeData.status,
         address: storeData.address,
+        name: storeData.name,
         stock: stock,
         sales: top_sales,
       };
@@ -182,10 +185,15 @@ class StoreContoller extends AbstractController {
   }
 
   private async postNewProduct(req: Request, res: Response) {
-    console.log(req.body)
+    console.log(req.body);
     try {
-      await db["Product"].create({ name: req.body.name, description: req.body.description, price: req.body.price, ean: req.body.ean})
-      res.send({message: "success"})
+      await db["Product"].create({
+        name: req.body.name,
+        description: req.body.description,
+        price: req.body.price,
+        ean: req.body.ean,
+      });
+      res.send({ message: "success" });
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
@@ -194,7 +202,6 @@ class StoreContoller extends AbstractController {
       }
     }
   }
-  
 }
 
 export default StoreContoller;
