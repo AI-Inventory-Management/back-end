@@ -81,6 +81,7 @@ class StoreContoller extends AbstractController {
       this.getAllProductsNames.bind(this)
     );
     this.router.get('/getAllProducts', this.getAllProducts.bind(this));
+    this.router.get('/getProduct/:productID', this.getProduct.bind(this));
   }
 
   // Create Store
@@ -229,6 +230,22 @@ class StoreContoller extends AbstractController {
         { type: QueryTypes.SELECT }
       );
       res.status(200).send(stores);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+  private async getProduct(req: Request, res: Response) {
+    try {
+      const product = await db.sequelize.query(
+        `Select id_product,name, price, ean, description from Product where id_product = ${req.params.productID}`,
+        { type: QueryTypes.SELECT }
+      );
+      res.status(200).send(product);
+      console.log(product)
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
