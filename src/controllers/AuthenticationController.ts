@@ -45,7 +45,7 @@ class AuthenticationController extends AbstractController{
                 }				
 			]);
             console.log('Cognito user created!', user);
-            return res.status(200).end();
+            return res.status(200).send({message: `User created successfully`});
         } catch (error:any) {
 			console.log('failed auth controller', error);
 			res.status(500).send({ code: error.code, message: error.message });
@@ -56,7 +56,7 @@ class AuthenticationController extends AbstractController{
 		const { email, code } = req.body;
 		try {
 			await this.cognitoService.verifyUser(email, code);
-			return res.status(200).end();
+			return res.status(200).send({message: `User verified successfully`});
 		} catch (error:any) {
 			console.log('failed auth controller', error);
 			res.status(500).send({ code: error.code, message: error.message }).end();
@@ -68,7 +68,7 @@ class AuthenticationController extends AbstractController{
 		try {
 			const login = await this.cognitoService.signInUser(email, password);
 
-			res.status(200).send({ ...login.AuthenticationResult });
+			res.status(200).send({ ...login.AuthenticationResult});
 		} catch (error:any) {
 			res.status(500).send({ code: error.code, message: error.message });
 		}
