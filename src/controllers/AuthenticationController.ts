@@ -23,17 +23,21 @@ class AuthenticationController extends AbstractController{
     }
 
     private async signUp(req: Request, res: Response){
-        const {email, name, password, phone_number, picture, role} = req.body;
+        const {email, given_name, family_name, password, phone_number, picture, role} = req.body;
         try {
             // Create Cognito User
 			const user = await this.cognitoService.signUpUser(email, password, [
 				{
 					Name: 'email',
-					Value: email,
+					Value: email
 				},
 				{
-					Name: 'name',
-					Value: name,
+					Name: 'given_name',
+					Value: given_name
+				},
+                {
+					Name: 'family_name',
+					Value: family_name
 				},
                 {
                     Name: 'phone_number',
@@ -108,7 +112,19 @@ class AuthenticationController extends AbstractController{
                             errorMessage:'Must be at least 8 characters'
                         }
                     },
-                    name: {
+                    given_name: {
+						isString: {
+							errorMessage: 'Must be a string',
+						},
+						isLength: {
+							options: {
+								min: 2,
+								max: 40,
+							},
+							errorMessage: 'Must be between 4 and 20 characters',
+						},
+					},
+                    family_name: {
 						isString: {
 							errorMessage: 'Must be a string',
 						},
