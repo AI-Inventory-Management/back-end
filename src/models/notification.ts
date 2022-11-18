@@ -6,6 +6,7 @@ interface NotificationAttributes {
   id_store: number;
   notification_text: string;
   timestamp: string;
+  read: boolean;
 }
 
 module.exports = (sequelize: any, DataTypes: any) => {
@@ -17,6 +18,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
     id_store!: number;
     notification_text!: string;
     timestamp!: string;
+    read!: boolean;
 
     static associate(models: any) {
       // Associations
@@ -46,6 +48,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
         defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
         allowNull: false,
       },
+      read: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+      }
     },
     {
       sequelize,
