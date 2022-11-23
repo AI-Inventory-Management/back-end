@@ -56,12 +56,19 @@ class NotificationContoller extends AbstractController {
 
   private async markNotificationAsRead(req: Request, res: Response) {
     try {
+      const notificationExists = await db["Notification"].findOne(
+        {where : { id_notification : req.body.id_notification }}
+      );
+      if (!notificationExists) {
+        res.status(400).send({ message: "Bad request." });
+        return;
+      }
       const result = await db["Notification"].update(
         {read: true},
         {where: {id_notification: req.body.id_notification}}
       );
-      if (!result) {
-        res.status(400).send("Bad request.");
+      if (!result || result == 0) {
+        res.status(400).send({ message: "Bad request." });
       }
       res.status(200).send(result);
     }
