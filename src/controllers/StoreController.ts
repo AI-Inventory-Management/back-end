@@ -82,6 +82,7 @@ class StoreContoller extends AbstractController {
     );
     this.router.get('/getAllProducts', this.getAllProducts.bind(this));
     this.router.get('/getProduct/:productID', this.getProduct.bind(this));
+    this.router.get('/getStoreNames', this.getStoreNames.bind(this));
   }
 
   // Create Store
@@ -246,6 +247,20 @@ class StoreContoller extends AbstractController {
       );
       res.status(200).send(product);
       console.log(product)
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async getStoreNames(req: Request, res: Response) {
+    try {
+      const names = await db["Store"].findAll({
+        attributes: ["id_store", "name"]});
+      res.status(200).send(names);
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
