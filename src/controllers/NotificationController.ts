@@ -23,7 +23,7 @@ class NotificationContoller extends AbstractController {
       "/getNewNotifications",
       this.getNewNotifications.bind(this)
     );
-
+    this.router.post("/markAsRead", this.markNotificationAsRead.bind(this))
   }
 
   private async getAllNotifications(req: Request, res: Response) {
@@ -46,6 +46,26 @@ class NotificationContoller extends AbstractController {
       );
       res.status(200).send(notifications);
     } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async markNotificationAsRead(req: Request, res: Response) {
+    try {
+      const result = await db["Notification"].update(
+        {read: true},
+        {where: {id_notification: req.body.id_notification}}
+      );
+      if (!result) {
+        res.status(400).send("Bad request.");
+      }
+      res.status(200).send(result);
+    }
+    catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
       } else {
