@@ -7,6 +7,7 @@ interface ProductAttributes {
   name: string;
   price: number;
   description: string;
+  diameter: number;
 }
 
 module.exports = (sequelize: any, DataTypes: any) => {
@@ -16,6 +17,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
     name!: string;
     price!: number;
     description!: string;
+    diameter!: number;
 
     static associate(models: any) {
       // Associations
@@ -50,6 +52,10 @@ module.exports = (sequelize: any, DataTypes: any) => {
       description: {
         type: DataTypes.STRING(50),
         allowNull: false,
+      },
+      diameter: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
       },
     },
     {
