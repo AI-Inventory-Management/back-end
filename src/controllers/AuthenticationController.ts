@@ -68,7 +68,7 @@ class AuthenticationController extends AbstractController {
     } catch (error: any) {
       console.log("failed auth controller", error);
       console.log(req.body);
-      res.status(500).send({ code: error.code, message: error.message });
+      res.status(500).send({errors: [{ code: error.code, msg: error.message }]});
     }
   }
 
@@ -79,7 +79,7 @@ class AuthenticationController extends AbstractController {
       return res.status(200).send({ message: `User verified successfully` });
     } catch (error: any) {
       console.log("failed auth controller", error);
-      res.status(500).send({ code: error.code, message: error.message }).end();
+      res.status(500).send({errors: [{ code: error.code, msg: error.message }]}).end();
     }
   }
 
@@ -98,7 +98,7 @@ class AuthenticationController extends AbstractController {
         .status(200)
         .send({ ...userData.dataValues, ...login.AuthenticationResult });
     } catch (error: any) {
-      res.status(500).send({ code: error.code, message: error.message });
+      res.status(500).send({errors: [{ code: error.code, msg: error.message }]});
     }
   }
 
@@ -111,7 +111,7 @@ class AuthenticationController extends AbstractController {
       res.status(200).send({ message: `User signed out successfully` });
     } catch (error: any) {
       //If exception occurs inform
-      res.status(500).send({ code: error.code, message: error.message });
+      res.status(500).send({errors: [{ code: error.code, msg: error.message }]});
     }
   }
   // private async getuser(req:Request, res:Response) {
