@@ -3,14 +3,14 @@ import AbstractController from "./AbstractController";
 import db from "../models";
 import { Op } from "sequelize";
 
-class NotificationContoller extends AbstractController {
-  private static instance: NotificationContoller;
+class NotificationController extends AbstractController {
+  private static instance: NotificationController;
 
   public static getInstance(): AbstractController {
     if (this.instance) {
       return this.instance;
     }
-    this.instance = new NotificationContoller("notification");
+    this.instance = new NotificationController("notification");
     return this.instance;
   }
 
@@ -82,4 +82,4 @@ class NotificationContoller extends AbstractController {
   }
 }
 
-export default NotificationContoller;
+export default NotificationController;
