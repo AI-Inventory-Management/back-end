@@ -4,8 +4,9 @@ import { Model } from "sequelize";
 interface NotificationAttributes {
   id_notification: number;
   id_store: number;
-  notification_text: string;
+  new_status: number;
   timestamp: string;
+  read: boolean;
 }
 
 module.exports = (sequelize: any, DataTypes: any) => {
@@ -15,8 +16,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
   {
     id_notification!: number;
     id_store!: number;
-    notification_text!: string;
+    new_status!: number;
     timestamp!: string;
+    read!: boolean;
 
     static associate(models: any) {
       // Associations
@@ -37,8 +39,8 @@ module.exports = (sequelize: any, DataTypes: any) => {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
       },
-      notification_text: {
-        type: DataTypes.STRING(1000),
+      new_status: {
+        type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
       },
       timestamp: {
@@ -46,6 +48,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
         defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
         allowNull: false,
       },
+      read: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false,
+      }
     },
     {
       sequelize,

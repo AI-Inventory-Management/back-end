@@ -75,7 +75,14 @@ class StoreContoller extends AbstractController {
     this.router.get("/getAllStores", this.getAllStores.bind(this));
 
     //Product
-    this.router.post('/postNewProduct', this.postNewProduct.bind(this));
+    this.router.post("/postNewProduct", this.postNewProduct.bind(this));
+    this.router.get(
+      "/getAllProductsNames",
+      this.getAllProductsNames.bind(this)
+    );
+    this.router.get('/getAllProducts', this.getAllProducts.bind(this));
+    this.router.get('/getProduct/:productID', this.getProduct.bind(this));
+    this.router.get('/getStoreNames', this.getStoreNames.bind(this));
   }
 
   // Create Store
@@ -127,7 +134,7 @@ class StoreContoller extends AbstractController {
     try {
       const storeData = await db["Store"].findOne({
         where: { id_store: req.params.storeId },
-        attributes: ["id_store", "status", "address"],
+        attributes: ["id_store", "status", "address", "name"],
       });
       if (!storeData) {
         res.status(400).send({ message: "No store associated to id" });
@@ -135,15 +142,18 @@ class StoreContoller extends AbstractController {
       }
       const stock = await db.sequelize.query(
         `SELECT Inventory.id_product, Product.name, Inventory.stock
-                                    FROM Inventory, Product
-                                    WHERE Inventory.id_store = ${req.params.storeId} AND Inventory.id_product = Product.id_product`,
-                                    { type: QueryTypes.SELECT });
+          FROM Inventory, Product
+          WHERE Inventory.id_store = ${req.params.storeId} AND Inventory.id_product = Product.id_product
+          ORDER BY Inventory.stock DESC`,
+        { type: QueryTypes.SELECT }
+      );
 
-      const top_sales = await db.sequelize.query(`SELECT Sale.id_product, Product.name, count(Sale.id_sale) as sales
+      const top_sales = await db.sequelize.query(
+        `SELECT Sale.id_product, Product.name, count(Sale.id_sale) as sales
                                         FROM Sale, Product
                                         WHERE Sale.id_store = ${req.params.storeId} AND Product.id_product = Sale.id_product
                                         GROUP BY Sale.id_product
-                                        ORDER BY count(Sale.id_product) desc
+                                        ORDER BY count(Sale.id_product) DESC
                                         LIMIT 10`,
         { type: QueryTypes.SELECT }
       );
@@ -151,6 +161,7 @@ class StoreContoller extends AbstractController {
         id: storeData.id_store,
         status: storeData.status,
         address: storeData.address,
+        name: storeData.name,
         stock: stock,
         sales: top_sales,
       };
@@ -181,10 +192,15 @@ class StoreContoller extends AbstractController {
   }
 
   private async postNewProduct(req: Request, res: Response) {
-    console.log(req.body)
+    console.log(req.body);
     try {
-      await db["Product"].create({ name: req.body.name, description: req.body.description, price: req.body.price, ean: req.body.ean})
-      res.send({message: "success"})
+      await db["Product"].create({
+        name: req.body.name,
+        description: req.body.description,
+        price: req.body.price,
+        ean: req.body.ean,
+      });
+      res.send({ message: "success" });
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
@@ -193,7 +209,66 @@ class StoreContoller extends AbstractController {
       }
     }
   }
-  
+
+  private async getAllProductsNames(req: Request, res: Response) {
+    try {
+      const names = await db["Product"].findAll({
+        attributes: [["name", "label"]],
+      });
+      res.send(names);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+  private async getAllProducts(req: Request, res: Response) {
+    try {
+      const stores = await db.sequelize.query(
+        `Select id_product,name, price from Product where id_product = ${req.query.id} and name = ${req.query.name} and ean = ${req.query.ean} and price = ${req.query.price}`,
+        { type: QueryTypes.SELECT }
+      );
+      res.status(200).send(stores);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+  private async getProduct(req: Request, res: Response) {
+    try {
+      const product = await db.sequelize.query(
+        `Select id_product,name, price, ean, description from Product where id_product = ${req.params.productID}`,
+        { type: QueryTypes.SELECT }
+      );
+      res.status(200).send(product);
+      console.log(product)
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async getStoreNames(req: Request, res: Response) {
+    try {
+      const names = await db["Store"].findAll({
+        attributes: ["id_store", "name"]});
+      res.status(200).send(names);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
 }
 
 export default StoreContoller;
