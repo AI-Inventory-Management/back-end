@@ -125,48 +125,48 @@ class AuthenticationController extends AbstractController {
           email: {
             in: "body",
             isEmail: {
-              errorMessage: "Must be a valid email",
+              errorMessage: "Please enter a valid email",
             },
           },
           password: {
             isString: {
-              errorMessage: "Must be a string",
+              errorMessage: "Password must be a string",
             },
             isLength: {
               options: {
                 min: 8,
               },
-              errorMessage: "Must be at least 8 characters",
+              errorMessage: "Password must have at least 8 characters",
             },
           },
           first_name: {
             isString: {
-              errorMessage: "Must be a string",
+              errorMessage: "First name must be a string",
             },
             isLength: {
               options: {
                 min: 2,
                 max: 40,
               },
-              errorMessage: "Must be between 4 and 20 characters",
+              errorMessage: "First name must be between 2 and 40 characters",
             },
           },
           last_name: {
             isString: {
-              errorMessage: "Must be a string",
+              errorMessage: "Last name must be a string",
             },
             isLength: {
               options: {
                 min: 2,
                 max: 40,
               },
-              errorMessage: "Must be between 4 and 20 characters",
+              errorMessage: "Last name must be between 2 and 40 characters",
             },
           },
           phone_number: {
             isMobilePhone: {
               options: "es-MX",
-              errorMessage: "Must be a valid phone number in Mexico",
+              errorMessage: "Phone number must be valid in Mexico",
             },
           },
         });
@@ -175,18 +175,18 @@ class AuthenticationController extends AbstractController {
           email: {
             in: "body",
             isEmail: {
-              errorMessage: "Must be a valid email",
+              errorMessage: "Please enter a valid email",
             },
           },
           password: {
             isString: {
-              errorMessage: "Must be a string",
+              errorMessage: "Password must be a string",
             },
             isLength: {
               options: {
                 min: 8,
               },
-              errorMessage: "Must be at least 8 characters",
+              errorMessage: "Password must have at least 8 characters",
             },
           },
         });
@@ -195,19 +195,19 @@ class AuthenticationController extends AbstractController {
           email: {
             in: "body",
             isEmail: {
-              errorMessage: "Must be a valid email",
+              errorMessage: "Please enter a valid email",
             },
           },
           code: {
             isString: {
-              errorMessage: "Must be a string",
+              errorMessage: "Code must be a string",
             },
             isLength: {
               options: {
                 min: 6,
-                max: 8,
+                max: 6,
               },
-              errorMessage: "Must be between 6 and 8 characters",
+              errorMessage: "Verification code must be 6 characters long",
             },
           },
         });
