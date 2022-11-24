@@ -1,11 +1,8 @@
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";
-import { timeStamp } from "console";
 import { checkSchema } from "express-validator";
-import { QueryTypes, Sequelize } from "sequelize";
-import { idText } from "typescript";
-import { DB_NAME } from "../config";
+import { QueryTypes } from "sequelize";
 
 class StoreContoller extends AbstractController {
   private static instance: StoreContoller;
@@ -74,14 +71,7 @@ class StoreContoller extends AbstractController {
     //Filter
     this.router.get("/getAllStores", this.getAllStores.bind(this));
 
-    //Product
-    this.router.post("/postNewProduct", this.postNewProduct.bind(this));
-    this.router.get(
-      "/getAllProductsNames",
-      this.getAllProductsNames.bind(this)
-    );
-    this.router.get('/getAllProducts', this.getAllProducts.bind(this));
-    this.router.get('/getProduct/:productID', this.getProduct.bind(this));
+    this.router.get('/getStoreNames', this.getStoreNames.bind(this));
   }
 
   // Create Store
@@ -190,62 +180,11 @@ class StoreContoller extends AbstractController {
     }
   }
 
-  private async postNewProduct(req: Request, res: Response) {
-    console.log(req.body);
+  private async getStoreNames(req: Request, res: Response) {
     try {
-      await db["Product"].create({
-        name: req.body.name,
-        description: req.body.description,
-        price: req.body.price,
-        ean: req.body.ean,
-      });
-      res.send({ message: "success" });
-    } catch (error) {
-      if (error instanceof Error) {
-        res.status(500).send({ message: error.message });
-      } else {
-        res.status(501).send({ message: "External error" });
-      }
-    }
-  }
-
-  private async getAllProductsNames(req: Request, res: Response) {
-    try {
-      const names = await db["Product"].findAll({
-        attributes: [["name", "label"]],
-      });
-      res.send(names);
-    } catch (error) {
-      if (error instanceof Error) {
-        res.status(500).send({ message: error.message });
-      } else {
-        res.status(501).send({ message: "External error" });
-      }
-    }
-  }
-  private async getAllProducts(req: Request, res: Response) {
-    try {
-      const stores = await db.sequelize.query(
-        `Select id_product,name, price from Product where id_product = ${req.query.id} and name = ${req.query.name} and ean = ${req.query.ean} and price = ${req.query.price}`,
-        { type: QueryTypes.SELECT }
-      );
-      res.status(200).send(stores);
-    } catch (error) {
-      if (error instanceof Error) {
-        res.status(500).send({ message: error.message });
-      } else {
-        res.status(501).send({ message: "External error" });
-      }
-    }
-  }
-  private async getProduct(req: Request, res: Response) {
-    try {
-      const product = await db.sequelize.query(
-        `Select id_product,name, price, ean, description from Product where id_product = ${req.params.productID}`,
-        { type: QueryTypes.SELECT }
-      );
-      res.status(200).send(product);
-      console.log(product)
+      const names = await db["Store"].findAll({
+        attributes: ["id_store", "name"]});
+      res.status(200).send(names);
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
