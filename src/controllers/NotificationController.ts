@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";
-import { Op } from "sequelize";
+import { QueryTypes } from "sequelize";
 
 class NotificationController extends AbstractController {
   private static instance: NotificationController;
@@ -28,7 +28,10 @@ class NotificationController extends AbstractController {
 
   private async getAllNotifications(req: Request, res: Response) {
     try {
-      const notifications = await db["Notification"].findAll();
+      const notifications = await db.sequelize.query(
+        `SELECT Notification.id_notification, Notification.id_store, Store.name, Notification.new_status, Notification.timestamp, Notification.read FROM Notification, Store WHERE Notification.id_store = Store.id_store;`,
+        { type: QueryTypes.SELECT }
+      );
       res.status(200).send(notifications);
     } catch (error) {
       if (error instanceof Error) {
@@ -41,8 +44,13 @@ class NotificationController extends AbstractController {
 
   private async getNewNotifications(req: Request, res: Response) {
     try {
-      const notifications = await db["Notification"].findAll(
-        {where: { id_notification: {[Op.gt]: req.query.newest_notification}}}
+      if (!req.query || !req.query.newest_notification) {
+        res.status(400).send({ message: "Bad request" });
+        return;
+      }
+      const notifications = await db.sequelize.query(
+        `SELECT Notification.id_notification, Notification.id_store, Store.name, Notification.new_status, Notification.timestamp, Notification.read FROM Notification, Store WHERE Notification.id_notification > ${req.query.newest_notification} AND Notification.id_store = Store.id_store;`,
+        { type: QueryTypes.SELECT }
       );
       res.status(200).send(notifications);
     } catch (error) {
