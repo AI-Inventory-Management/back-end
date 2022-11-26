@@ -42,7 +42,10 @@ class Server {
   }
 
   private async databases() {
-    await db.sequelize.sync({ force: false });
+    await db.sequelize
+      .sync({ force: false })
+      .then(() => console.log("conexión exitosa"))
+      .catch((err: any) => console.log(err));
   }
 
   public init(): void {

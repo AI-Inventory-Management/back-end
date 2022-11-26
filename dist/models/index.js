@@ -13,6 +13,7 @@ const config_1 = __importDefault(require("../config/config"));
 const db = {};
 // Define Sequelize params
 let sequelize;
+console.log(env);
 if (env === "development") {
     sequelize = new Sequelize(config_1.default.development.database, config_1.default.development.username, config_1.default.development.password, {
         dialect: config_1.default.development.dialect,

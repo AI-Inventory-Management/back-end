@@ -43,7 +43,10 @@ class Server {
     }
     databases() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield models_1.default.sequelize.sync({ force: false });
+            yield models_1.default.sequelize
+                .sync({ force: false })
+                .then(() => console.log("conexión exitosa"))
+                .catch((err) => console.log(err));
         });
     }
     init() {

@@ -10,6 +10,7 @@ const db: any = {};
 
 // Define Sequelize params
 let sequelize: any;
+console.log(env);
 if (env === "development") {
   sequelize = new Sequelize(
     config.development.database,
