@@ -21,7 +21,7 @@ class Server {
     this.env = appInit.env;
     this.loadMiddlewares(appInit.middlewares);
     this.loadRoutes(appInit.controllers);
-    this.databases();
+    // this.databases();
   }
 
   private loadRoutes(controllers: AbstractController[]): void {
@@ -41,14 +41,22 @@ class Server {
     });
   }
 
-  private async databases() {
-    await db.sequelize.sync({ force: false });
-  }
+  // private async databases() {
+  //   await db.sequelize
+  //     .sync({ force: false })
+  //     .then(() => console.log("conexión exitosa"))
+  //     .catch((err: any) => console.log(err));
+  // }
 
-  public init(): void {
-    this.app.listen(this.port, () => {
-      console.log(`Server running on port: ${this.port}`);
-    });
+  public async init() {
+    await db.sequelize
+      .sync({ force: false })
+      .then(() =>
+        this.app.listen(this.port, () => {
+          console.log(`Server running on port: ${this.port}`);
+        })
+      )
+      .catch((err: any) => console.log(err));
   }
 }
 
