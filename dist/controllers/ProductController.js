@@ -24,10 +24,10 @@ class ProductController extends AbstractController_1.default {
         return this.instance;
     }
     initRoutes() {
-        this.router.post("/postNewProduct", this.postNewProduct.bind(this));
-        this.router.get("/getAllProductsNames", this.getAllProductsNames.bind(this));
-        this.router.get('/getAllProducts', this.getAllProducts.bind(this));
-        this.router.get('/getProduct/:productID', this.getProduct.bind(this));
+        this.router.post("/postNewProduct", this.authMiddleware.verifyToken, this.postNewProduct.bind(this));
+        this.router.get("/getAllProductsNames", this.authMiddleware.verifyToken, this.getAllProductsNames.bind(this));
+        this.router.get('/getAllProducts', this.authMiddleware.verifyToken, this.getAllProducts.bind(this));
+        this.router.get('/getProduct/:productID', this.authMiddleware.verifyToken, this.getProduct.bind(this));
     }
     postNewProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -90,7 +90,6 @@ class ProductController extends AbstractController_1.default {
             try {
                 const product = yield models_1.default.sequelize.query(`Select id_product,name, price, ean, description from Product where id_product = ${req.params.productID}`, { type: sequelize_1.QueryTypes.SELECT });
                 res.status(200).send(product);
-                console.log(product);
             }
             catch (error) {
                 if (error instanceof Error) {
@@ -102,6 +101,8 @@ class ProductController extends AbstractController_1.default {
             }
         });
     }
+    ;
 }
+;
 exports.default = ProductController;
 //# sourceMappingURL=ProductController.js.map

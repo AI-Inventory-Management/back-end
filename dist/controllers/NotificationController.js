@@ -24,9 +24,9 @@ class NotificationController extends AbstractController_1.default {
         return this.instance;
     }
     initRoutes() {
-        this.router.get("/getAllNotifications", this.getAllNotifications.bind(this));
-        this.router.get("/getNewNotifications", this.getNewNotifications.bind(this));
-        this.router.post("/markAsRead", this.markNotificationAsRead.bind(this));
+        this.router.get("/getAllNotifications", this.authMiddleware.verifyToken, this.getAllNotifications.bind(this));
+        this.router.get("/getNewNotifications", this.authMiddleware.verifyToken, this.getNewNotifications.bind(this));
+        this.router.post("/markAsRead", this.authMiddleware.verifyToken, this.markNotificationAsRead.bind(this));
     }
     getAllNotifications(req, res) {
         return __awaiter(this, void 0, void 0, function* () {

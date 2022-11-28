@@ -15,13 +15,14 @@ class ProductController extends AbstractController {
   }
 
   protected initRoutes(): void {
-    this.router.post("/postNewProduct", this.postNewProduct.bind(this));
+    this.router.post("/postNewProduct", this.authMiddleware.verifyToken, this.postNewProduct.bind(this));
     this.router.get(
       "/getAllProductsNames",
+      this.authMiddleware.verifyToken,
       this.getAllProductsNames.bind(this)
     );
-    this.router.get('/getAllProducts', this.getAllProducts.bind(this));
-    this.router.get('/getProduct/:productID', this.getProduct.bind(this));
+    this.router.get('/getAllProducts', this.authMiddleware.verifyToken, this.getAllProducts.bind(this));
+    this.router.get('/getProduct/:productID', this.authMiddleware.verifyToken, this.getProduct.bind(this));
   }
 
   private async postNewProduct(req: Request, res: Response) {
@@ -81,7 +82,6 @@ class ProductController extends AbstractController {
         { type: QueryTypes.SELECT }
       );
       res.status(200).send(product);
-      console.log(product)
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
@@ -89,7 +89,7 @@ class ProductController extends AbstractController {
         res.status(501).send({ message: "External error" });
       }
     }
-  }
-}
+  };
+};
 
 export default ProductController;

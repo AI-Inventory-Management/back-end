@@ -24,7 +24,7 @@ class Server {
         this.env = appInit.env;
         this.loadMiddlewares(appInit.middlewares);
         this.loadRoutes(appInit.controllers);
-        this.databases();
+        // this.databases();
     }
     loadRoutes(controllers) {
         this.app.get("/", (_, res) => {
@@ -41,17 +41,20 @@ class Server {
             this.app.use(middleware);
         });
     }
-    databases() {
+    // private async databases() {
+    //   await db.sequelize
+    //     .sync({ force: false })
+    //     .then(() => console.log("conexión exitosa"))
+    //     .catch((err: any) => console.log(err));
+    // }
+    init() {
         return __awaiter(this, void 0, void 0, function* () {
             yield models_1.default.sequelize
                 .sync({ force: false })
-                .then(() => console.log("conexión exitosa"))
+                .then(() => this.app.listen(this.port, () => {
+                console.log(`Server running on port: ${this.port}`);
+            }))
                 .catch((err) => console.log(err));
-        });
-    }
-    init() {
-        this.app.listen(this.port, () => {
-            console.log(`Server running on port: ${this.port}`);
         });
     }
 }

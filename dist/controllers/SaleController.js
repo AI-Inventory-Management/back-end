@@ -41,7 +41,7 @@ class StoreContoller extends AbstractController_1.default {
         }
     }
     initRoutes() {
-        this.router.post("/postCreateSale", this.validateBody("createSale"), this.handleErrors, this.postCreateSale.bind(this));
+        this.router.post("/postCreateSale", this.authMiddleware.verifyToken, this.validateBody("createSale"), this.handleErrors, this.postCreateSale.bind(this));
     }
     postCreateSale(req, res) {
         return __awaiter(this, void 0, void 0, function* () {

@@ -58,20 +58,22 @@ class StoreContoller extends AbstractController {
   protected initRoutes(): void {
     this.router.post(
       "/createStore",
+      this.authMiddleware.verifyToken,
       this.validateBody("createStore"),
       this.handleErrors,
       this.postCreateStore.bind(this)
     ); // Create
     this.router.get(
       "/getStoreCoordinates",
+      this.authMiddleware.verifyToken,
       this.getStoreCoordinates.bind(this)
     );
-    this.router.get("/getStoreData/:storeId", this.getStoreData.bind(this));
+    this.router.get("/getStoreData/:storeId", this.authMiddleware.verifyToken, this.getStoreData.bind(this));
 
     //Filter
-    this.router.get("/getAllStores", this.getAllStores.bind(this));
+    this.router.get("/getAllStores", this.authMiddleware.verifyToken, this.getAllStores.bind(this));
 
-    this.router.get('/getStoreNames', this.getStoreNames.bind(this));
+    this.router.get('/getStoreNames', this.authMiddleware.verifyToken, this.getStoreNames.bind(this));
   }
 
   // Create Store

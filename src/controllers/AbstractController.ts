@@ -11,6 +11,7 @@ Program that defines the controller for the Agent, its routes and functionalitie
 import { Router } from "express";
 
 import ValidationErrorMiddleware from "../middlewares/validationError";
+import AuthMiddleware from '../middlewares/authorization';
 
 //Services
 import CognitoService from '../services/cognitoService';
@@ -20,6 +21,7 @@ export default abstract class AbstractController {
   private _prefix: string;
 
   protected handleErrors = ValidationErrorMiddleware.handleErrors;
+  protected authMiddleware = AuthMiddleware.getInstance();
   protected cognitoService = CognitoService.getInstance();
 
   public get prefix(): string {
