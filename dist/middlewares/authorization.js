@@ -35,7 +35,7 @@ class AuthMiddleware {
             const token = req.headers.authorization.replace('Bearer ', '');
             const decodedJWT = jsonwebtoken_1.default.decode(token, { complete: true });
             if (!decodedJWT) {
-                return res.status(401).send({ code: 'InvalidTokenException', message: 'The token is no valid' });
+                res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid 1' });
             }
             const kid = decodedJWT.header.kid;
             if (kid !== undefined) {
@@ -46,15 +46,20 @@ class AuthMiddleware {
                 const pem = pems[kid];
                 jsonwebtoken_1.default.verify(token, pem, { algorithms: ['RS256'] }, function (err) {
                     if (err) {
-                        return res.status(401).send({ code: 'InvalidTokenException', message: 'The token is no valid' });
+                        res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid 2' });
+                        console.log("Error 2");
+                    }
+                    else {
+                        req.user = decodedJWT.payload.username;
+                        req.token = token;
+                        console.log("Next");
+                        next();
                     }
                 });
-                req.user = decodedJWT.payload.username;
-                req.token = token;
-                next();
+                return;
             }
             else {
-                return res.status(401).send({ code: 'InvalidTokenException', message: 'The token is no valid' });
+                res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid 3' });
             }
         }
         else {
