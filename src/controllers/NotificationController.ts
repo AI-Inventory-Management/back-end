@@ -25,6 +25,7 @@ class NotificationController extends AbstractController {
     );
     this.router.get("/getNewNotificationsCount", this.getNewNotificationsCount.bind(this));
     this.router.get("/getTheNewestNotification", this.getTheNewestNotification.bind(this));
+    this.router.get("/getUnreadNotificationsCount", this.getUnreadtNotifications.bind(this));
     this.router.post("/markAsRead", this.markNotificationAsRead.bind(this));
   }
 
@@ -92,6 +93,21 @@ class NotificationController extends AbstractController {
         { type: QueryTypes.SELECT }
       );
       res.status(200).send(newest_notification[0]);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async getUnreadtNotifications(req: Request, res: Response) {
+    try {
+      const count = await db['Notification'].count(
+        {where: { read: false }}
+      );
+      res.status(200).send({count});
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
