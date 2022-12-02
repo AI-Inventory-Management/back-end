@@ -123,7 +123,7 @@ class StoreContoller extends AbstractController {
     try {
       const storeData = await db["Store"].findOne({
         where: { id_store: req.params.storeId },
-        attributes: ["id_store", "status", "address", "name"],
+        attributes: ["id_store", "status", "address", "name", "latitude", "longitude"],
       });
       if (!storeData) {
         res.status(400).send({ message: "No store associated to id" });
@@ -151,6 +151,7 @@ class StoreContoller extends AbstractController {
         status: storeData.status,
         address: storeData.address,
         name: storeData.name,
+        position: { lat: storeData.latitude, lng: storeData.longitude },
         stock: stock,
         sales: top_sales,
       };
