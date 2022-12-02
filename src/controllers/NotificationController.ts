@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";
-import { QueryTypes } from "sequelize";
+import { QueryTypes, Op } from "sequelize";
 
 class NotificationController extends AbstractController {
   private static instance: NotificationController;
@@ -23,7 +23,10 @@ class NotificationController extends AbstractController {
       "/getNewNotifications",
       this.getNewNotifications.bind(this)
     );
-    this.router.post("/markAsRead", this.markNotificationAsRead.bind(this))
+    this.router.get("/getNewNotificationsCount", this.getNewNotificationsCount.bind(this));
+    this.router.get("/getTheNewestNotification", this.getTheNewestNotification.bind(this));
+    this.router.get("/getUnreadNotificationsCount", this.getUnreadtNotifications.bind(this));
+    this.router.post("/markAsRead", this.markNotificationAsRead.bind(this));
   }
 
   private async getAllNotifications(req: Request, res: Response) {
@@ -53,6 +56,58 @@ class NotificationController extends AbstractController {
         { type: QueryTypes.SELECT }
       );
       res.status(200).send(notifications);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async getNewNotificationsCount(req: Request, res: Response) {
+    try {
+      if (!req.query || !req.query.newest_notification) {
+        res.status(400).send({ message: "Bad request" });
+        return;
+      }
+      const count = await db['Notification'].count({
+        where: { id_notification: {[Op.gt]: req.query.newest_notification}}
+      });
+      console.log(count);
+      
+      res.status(200).send({count});
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async getTheNewestNotification(req: Request, res: Response) {
+    try {
+      const newest_notification = await db.sequelize.query(
+        `SELECT Notification.id_notification, Notification.id_store, Store.name, Notification.new_status, Notification.timestamp, Notification.read FROM Notification, Store WHERE Notification.id_store = Store.id_store ORDER BY id_notification DESC LIMIT 1;`,
+        { type: QueryTypes.SELECT }
+      );
+      res.status(200).send(newest_notification[0]);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).send({ message: error.message });
+      } else {
+        res.status(501).send({ message: "External error" });
+      }
+    }
+  }
+
+  private async getUnreadtNotifications(req: Request, res: Response) {
+    try {
+      const count = await db['Notification'].count(
+        {where: { read: false }}
+      );
+      res.status(200).send({count});
     } catch (error) {
       if (error instanceof Error) {
         res.status(500).send({ message: error.message });
