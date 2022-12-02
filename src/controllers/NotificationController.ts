@@ -17,16 +17,18 @@ class NotificationController extends AbstractController {
   protected initRoutes(): void {
     this.router.get(
       "/getAllNotifications",
+      this.authMiddleware.verifyToken,
       this.getAllNotifications.bind(this)
     );
     this.router.get(
       "/getNewNotifications",
+      this.authMiddleware.verifyToken,
       this.getNewNotifications.bind(this)
     );
-    this.router.get("/getNewNotificationsCount", this.getNewNotificationsCount.bind(this));
-    this.router.get("/getTheNewestNotification", this.getTheNewestNotification.bind(this));
-    this.router.get("/getUnreadNotificationsCount", this.getUnreadtNotifications.bind(this));
-    this.router.post("/markAsRead", this.markNotificationAsRead.bind(this));
+    this.router.post("/markAsRead", this.authMiddleware.verifyToken, this.markNotificationAsRead.bind(this))
+    this.router.get("/getNewNotificationsCount", this.authMiddleware.verifyToken, this.getNewNotificationsCount.bind(this));
+    this.router.get("/getTheNewestNotification", this.authMiddleware.verifyToken, this.getTheNewestNotification.bind(this));
+    this.router.get("/getUnreadNotificationsCount", this.authMiddleware.verifyToken, this.getUnreadtNotifications.bind(this));
   }
 
   private async getAllNotifications(req: Request, res: Response) {

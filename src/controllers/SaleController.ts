@@ -36,6 +36,7 @@ class StoreContoller extends AbstractController {
   protected initRoutes(): void {
     this.router.post(
       "/postCreateSale",
+      this.authMiddleware.verifyToken,
       this.validateBody("createSale"),
       this.handleErrors,
       this.postCreateSale.bind(this)
