@@ -1,3 +1,14 @@
+/*
+AuthenticationController.ts
+Authors:
+- 
+Creation date: 11/10/2022
+Last modification date: 01/12/2022
+
+Handles authentication for the web app
+For more detailed info look at the API documentation
+*/
+
 import { Request, Response } from "express";
 import { checkSchema } from "express-validator";
 import AbstractController from "./AbstractController";

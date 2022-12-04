@@ -1,11 +1,11 @@
 /*
-AgentController.ts
+AbstractController.ts
 Authors:
 - 
 Creation date: 28/04/2022
 Last modification date: 01/06/2022
 
-Program that defines the controller for the Agent, its routes and functionalities
+Abstract controller class to define common methods and attributes for all endpoints
 */
 
 import { Router } from "express";

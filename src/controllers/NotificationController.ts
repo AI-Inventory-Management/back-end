@@ -1,3 +1,14 @@
+/*
+NotificationController.ts
+Authors:
+- Javier Moreno
+Creation date: 11/10/2022
+Last modification date: 01/12/2022
+
+Handles notifications for the web app
+For more detailed info look at the API documentation
+*/
+
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";
