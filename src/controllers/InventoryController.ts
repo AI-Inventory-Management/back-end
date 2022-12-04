@@ -1,3 +1,12 @@
+/*
+InventoryController.ts
+Autores:
+- 
+
+Controlador que maneja la lógica y web requests relativos al inventario
+Para más información consultat la documentación de la API
+*/
+
 import AbstractController from "./AbstractController";
 import { checkSchema } from "express-validator";
 

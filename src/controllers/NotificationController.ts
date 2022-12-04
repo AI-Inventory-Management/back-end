@@ -1,12 +1,10 @@
 /*
 NotificationController.ts
-Authors:
+Autores:
 - Javier Moreno
-Creation date: 11/10/2022
-Last modification date: 01/12/2022
 
-Handles notifications for the web app
-For more detailed info look at the API documentation
+Controlador que maneja los requests y lógica para el manejo de notificaciones en la aplicación web
+Para más información consultat la documentación de la API
 */
 
 import { Request, Response } from "express";

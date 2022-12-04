@@ -1,3 +1,12 @@
+/*
+SaleController.ts
+Autores:
+- 
+
+Controlador que maneja los requests y lógica para las ventas
+Para más información consultat la documentación de la API
+*/
+
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";

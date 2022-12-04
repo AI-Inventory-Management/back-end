@@ -1,12 +1,10 @@
 /*
 ProductController.ts
-Authors:
+Autores:
 - Javier Moreno
-Creation date: 10/10/2022
-Last modification date: 01/12/2022
 
-Handles web requests and buissness logic pertaining to product data
-For more detailed info look at the API documentation
+Controlador que maneja los requests y lógica relativos a los productos
+Para más información consultat la documentación de la API
 */
 
 import { Request, Response } from "express";

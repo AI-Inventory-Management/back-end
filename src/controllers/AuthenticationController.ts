@@ -1,12 +1,10 @@
 /*
 AuthenticationController.ts
-Authors:
+Autores:
 - 
-Creation date: 11/10/2022
-Last modification date: 01/12/2022
 
-Handles authentication for the web app
-For more detailed info look at the API documentation
+Controlador que maneja la autenticación en la aplicación web
+Para más información consultat la documentación de la API
 */
 
 import { Request, Response } from "express";

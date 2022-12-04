@@ -1,12 +1,10 @@
 /*
 StoreController.ts
-Authors:
+Autores:
 - Javier Moreno
-Creation date: 10/10/2022
-Last modification date: 01/12/2022
 
-Handles web requests and buissness logic pertaining to store data
-For more detailed info look at the API documentation
+Controlador que maneja los requests y lógica relativos a las tiendas
+Para más información consultat la documentación de la API
 */
 
 import { Request, Response } from "express";

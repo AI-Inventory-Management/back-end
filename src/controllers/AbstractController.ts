@@ -1,11 +1,10 @@
 /*
 AbstractController.ts
-Authors:
+Autores:
 - 
-Creation date: 28/04/2022
-Last modification date: 01/06/2022
 
-Abstract controller class to define common methods and attributes for all endpoints
+
+Clase abstracta para definir metodos y atributos comunes entre todos los controladores
 */
 
 import { Router } from "express";
