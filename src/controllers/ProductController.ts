@@ -1,3 +1,14 @@
+/*
+ProductController.ts
+Authors:
+- Javier Moreno
+Creation date: 10/10/2022
+Last modification date: 01/12/2022
+
+Handles web requests and buissness logic pertaining to product data
+For more detailed info look at the API documentation
+*/
+
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";

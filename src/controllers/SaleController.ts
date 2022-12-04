@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
 import db from "../models";
-import { timeStamp } from "console";
 import { checkSchema } from "express-validator";
 
 class StoreContoller extends AbstractController {

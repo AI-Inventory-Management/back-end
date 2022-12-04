@@ -1,6 +1,4 @@
-import { Request, Response } from "express";
 import AbstractController from "./AbstractController";
-import db from "../models";
 import { checkSchema } from "express-validator";
 
 class InventoryController extends AbstractController {
