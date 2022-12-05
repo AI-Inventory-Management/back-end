@@ -1,3 +1,12 @@
+/*
+validationError.ts
+Autores: Benjamín Ruiz
+- 
+
+
+Clase que usan los controladores para validar que no haya errores en la petición del cliente
+*/
+
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 

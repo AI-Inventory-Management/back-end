@@ -1,3 +1,12 @@
+/*
+config.ts
+Autores: Benjamín Ruiz
+- 
+
+
+Archivo en donde se inicia el servidor con sus middlewares y sus controladores
+*/
+
 import Server from "./providers/Server";
 import { PORT, NODE_ENV } from "./config";
 import express from "express";
@@ -11,7 +20,13 @@ import ProductController from "./controllers/ProductController";
 const app = new Server({
   port: PORT,
   middlewares: [express.json(), express.urlencoded({ extended: true }), cors()],
-  controllers: [StoreContoller.getInstance(), SaleController.getInstance(), NotificationController.getInstance(), AuthenticationController.getInstance(), ProductController.getInstance()],
+  controllers: [
+    StoreContoller.getInstance(),
+    SaleController.getInstance(),
+    NotificationController.getInstance(),
+    AuthenticationController.getInstance(),
+    ProductController.getInstance(),
+  ],
   env: NODE_ENV,
 });
 

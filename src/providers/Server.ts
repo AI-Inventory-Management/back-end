@@ -1,10 +1,16 @@
+/*
+Server.ts
+Autores: Benjamín Ruiz
+- 
+
+
+Clase que inicializa sequelize y el servidor de ExpressJS con sus middlewares y controladores
+*/
+
 import express, { Request, Response, NextFunction } from "express";
 import db from "../models";
 import AbstractController from "../controllers/AbstractController";
 
-/*
-Class that initializes sequelize and the express server with its middlewares and controllers
-*/
 class Server {
   private app: express.Application;
   private port: number;
@@ -21,7 +27,6 @@ class Server {
     this.env = appInit.env;
     this.loadMiddlewares(appInit.middlewares);
     this.loadRoutes(appInit.controllers);
-    // this.databases();
   }
 
   private loadRoutes(controllers: AbstractController[]): void {
@@ -40,13 +45,6 @@ class Server {
       this.app.use(middleware);
     });
   }
-
-  // private async databases() {
-  //   await db.sequelize
-  //     .sync({ force: false })
-  //     .then(() => console.log("conexión exitosa"))
-  //     .catch((err: any) => console.log(err));
-  // }
 
   public async init() {
     await db.sequelize

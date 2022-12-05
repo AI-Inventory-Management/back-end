@@ -1,6 +1,6 @@
 /*
 AbstractController.ts
-Autores:
+Autores: Benjamín Ruiz
 - 
 
 
@@ -10,10 +10,10 @@ Clase abstracta para definir metodos y atributos comunes entre todos los control
 import { Router } from "express";
 
 import ValidationErrorMiddleware from "../middlewares/validationError";
-import AuthMiddleware from '../middlewares/authorization';
+import AuthMiddleware from "../middlewares/authorization";
 
 //Services
-import CognitoService from '../services/cognitoService';
+import CognitoService from "../services/cognitoService";
 
 export default abstract class AbstractController {
   private _router: Router = Router();
