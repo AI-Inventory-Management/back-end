@@ -1,3 +1,14 @@
+/*
+index.ts
+Autores:
+- Benjamín Ruiz
+
+
+Archivo para indicarle a sequelize los modelos que existen en la carpeta models.
+Estos modelos se guardan en una variable "db" que permite a los controladores acceder
+a ellos.
+*/
+
 "use-strict";
 
 import fs from "fs";
