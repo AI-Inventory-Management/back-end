@@ -2,6 +2,7 @@
 ProductController.ts
 Autores:
 - Javier Moreno
+- Andrea Díaz
 
 Controlador que maneja los requests y lógica relativos a los productos
 Para más información consultat la documentación de la API

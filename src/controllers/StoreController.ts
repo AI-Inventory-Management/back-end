@@ -2,6 +2,7 @@
 StoreController.ts
 Autores:
 - Javier Moreno
+- Andrea Díaz
 
 Controlador que maneja los requests y lógica relativos a las tiendas
 Para más información consultat la documentación de la API
