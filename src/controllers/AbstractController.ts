@@ -1,7 +1,7 @@
 /*
 AbstractController.ts
-Autores: Benjamín Ruiz
-- 
+Autores:
+- Benjamín Ruiz
 
 
 Clase abstracta para definir metodos y atributos comunes entre todos los controladores

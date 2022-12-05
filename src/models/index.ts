@@ -1,7 +1,7 @@
 /*
 index.ts
-Autores: Benjamín Ruiz
-- 
+Autores:
+- Benjamín Ruiz
 
 
 Archivo para indicarle a sequelize los modelos que existen en la carpeta models.

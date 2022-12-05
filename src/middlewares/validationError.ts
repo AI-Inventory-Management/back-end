@@ -1,7 +1,7 @@
 /*
 validationError.ts
-Autores: Benjamín Ruiz
-- 
+Autores:
+- Benjamín Ruiz
 
 
 Clase que usan los controladores para validar que no haya errores en la petición del cliente

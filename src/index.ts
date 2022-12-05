@@ -1,7 +1,7 @@
 /*
 config.ts
-Autores: Benjamín Ruiz
-- 
+Autores:
+- Benjamín Ruiz
 
 
 Archivo en donde se inicia el servidor con sus middlewares y sus controladores

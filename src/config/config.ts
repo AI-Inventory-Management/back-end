@@ -1,7 +1,7 @@
 /*
 config.ts
-Autores: Benjamín Ruiz
-- 
+Autores:
+- Benjamín Ruiz
 
 
 Archivo que exporta las variables de entorno globales que cambiarán dependiendo del ambiente

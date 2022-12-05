@@ -1,7 +1,7 @@
 /*
 Server.ts
-Autores: Benjamín Ruiz
-- 
+Autores:
+- Benjamín Ruiz
 
 
 Clase que inicializa sequelize y el servidor de ExpressJS con sus middlewares y controladores
