@@ -1,4 +1,10 @@
-//'use strict';
+/*
+product.ts
+Autores:
+- Edna Jacqueline Zavala Ortega
+
+Modelo que representa una instancia de cada producto.
+*/
 import { Model } from "sequelize";
 
 interface ProductAttributes {

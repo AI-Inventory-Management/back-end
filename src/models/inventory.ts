@@ -1,4 +1,11 @@
-//'use strict';
+/*
+inventory.ts
+Autores:
+- Edna Jacqueline Zavala Ortega
+
+Modelo que representa el inventario de cada producto.
+*/
+
 import { Model } from "sequelize";
 
 interface InventoryAttributes {

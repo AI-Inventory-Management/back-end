@@ -1,4 +1,10 @@
-//'use strict';
+/*
+store.ts
+Autores:
+- Edna Jacqueline Zavala Ortega
+
+Modelo que representa una instancia de cada tienda.
+*/
 import { Model } from "sequelize";
 
 interface StoreAttributes {

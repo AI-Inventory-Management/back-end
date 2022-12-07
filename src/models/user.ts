@@ -1,4 +1,11 @@
-//'use strict';
+/*
+user.ts
+Autores:
+- 
+
+Modelo que representa una instancia de un usuario del sistema.
+*/
+
 import { Model } from "sequelize";
 
 interface UserAttributes {

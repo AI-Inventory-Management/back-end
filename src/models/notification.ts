@@ -1,4 +1,11 @@
-//'use strict';
+/*
+notification.ts
+Autores:
+- Edna Jacqueline Zavala Ortega
+
+Modelo que representa una notificación del sistema.
+*/
+
 import { Model } from "sequelize";
 
 interface NotificationAttributes {

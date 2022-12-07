@@ -1,4 +1,10 @@
-//'use strict';
+/*
+sale.ts
+Autores:
+- Edna Jacqueline Zavala Ortega
+
+Modelo que representa una instancia de una venta de un producto.
+*/
 import { Model } from "sequelize";
 
 interface SaleAttributes {

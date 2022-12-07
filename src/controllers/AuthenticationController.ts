@@ -1,7 +1,8 @@
 /*
 AuthenticationController.ts
 Autores:
-- 
+- Víctor Adrián Sosa Hernández
+- Edna Jacqueline Zavala Ortega
 
 Controlador que maneja la autenticación en la aplicación web
 Para más información consultat la documentación de la API
@@ -23,6 +24,7 @@ class AuthenticationController extends AbstractController {
     return this.instance;
   }
 
+  // Definir rutas 
   protected initRoutes(): void {
     this.router.post(
       "/signup",
@@ -42,15 +44,15 @@ class AuthenticationController extends AbstractController {
       this.handleErrors,
       this.verify.bind(this)
     );
-    this.router.post("/signout", this.signout.bind(this));
-    //this.router.get('/getUser', this.getuser.bing(this));
   }
 
+  // Sign Up
   private async signUp(req: Request, res: Response) {
+    // Se reciben los datos
     const { email, first_name, last_name, password, phone_number } = req.body;
     console.log("gg");
     try {
-      // Create Cognito User
+      // Se crea el usuario de cognito
       const user = await this.cognitoService.signUpUser(email, password, [
         {
           Name: "email",
@@ -68,10 +70,10 @@ class AuthenticationController extends AbstractController {
       console.log("Cognito user created!", user);
       const userData = { ...req.body, cognito_uuid: user.UserSub };
 
-      //   Save user in database
+      //   Se guarda el usuario en la base de datos
       await db["User"].create(userData);
       console.log("Registro exitoso");
-      //
+      
 
       return res.status(200).send({ message: `User created successfully` });
     } catch (error: any) {
@@ -81,6 +83,7 @@ class AuthenticationController extends AbstractController {
     }
   }
 
+  // Verificación de la cuenta mediante el código que se envía por correo electrónico
   private async verify(req: Request, res: Response) {
     const { email, code } = req.body;
     try {
@@ -92,14 +95,16 @@ class AuthenticationController extends AbstractController {
     }
   }
 
+  // Iniciar sesión
   private async signin(req: Request, res: Response) {
+    // Recibir usuario y contraseña
     const { email, password } = req.body;
     try {
       const login = await this.cognitoService.signInUser(email, password);
 
-      // Select info of the user
+      // Seleccionar de la base de datos la información del usuario
       const userData = await db["User"].findOne({
-        where: { email }, //email: email
+        where: { email }, 
         attributes: ["first_name", "last_name", "role", "profile_picture"],
       });
 
@@ -111,22 +116,7 @@ class AuthenticationController extends AbstractController {
     }
   }
 
-  private async signout(req: Request, res: Response) {
-    const token = req.get("authorization")?.split(" ")[1];
-    console.log(token);
-    try {
-      //Sign out using Cognito
-      await this.cognitoService.signOut(token);
-      res.status(200).send({ message: `User signed out successfully` });
-    } catch (error: any) {
-      //If exception occurs inform
-      res.status(500).send({errors: [{ code: error.code, msg: error.message }]});
-    }
-  }
-  // private async getuser(req:Request, res:Response) {
-  //     const {} = req.body;
-
-  // }
+  // Validar el body del JSON para cada caso
   protected validateBody(type: "signup" | "signin" | "verify") {
     switch (type) {
       case "signup":

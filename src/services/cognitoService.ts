@@ -1,3 +1,11 @@
+/*
+cognitoService.ts
+Autores:
+- Víctor Adrián Sosa Hernández
+
+Servicio para conectarse a AWS Cognito.
+*/
+
 import AWS from 'aws-sdk';
 import crypto from 'crypto';
 import { COGNITO_APP_CLIENT_ID, COGNITO_APP_SECRET_HASH, AWS_REGION } from '../config';

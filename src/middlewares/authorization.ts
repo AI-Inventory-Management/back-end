@@ -1,3 +1,13 @@
+/*
+AuthenticationController.ts
+Autores:
+- Víctor Adrián Sosa Hernández
+- Edna Jacqueline Zavala Ortega
+- Benjamín Ruiz
+
+Middleware que permite la interacción con AWS cognito.
+*/
+
 import { Response, Request, NextFunction } from 'express';
 import { COGNITO_USER_POOL_ID, AWS_REGION } from '../config';
 import jwt from 'jsonwebtoken';
@@ -23,23 +33,23 @@ class AuthMiddleware {
 		this.getAWSCognitoPems();
 	}
 
+	// Método que permite verificar la validez del token para una sesión.
 	public verifyToken(req: Request, res: Response, next: NextFunction) {
 		if (req.headers.authorization) {
 			const token = req.headers.authorization.replace('Bearer ', '');
 			const decodedJWT:any = jwt.decode(token, { complete: true });
 			if (!decodedJWT) {
-				res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid 1' });
+				res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid' });
 			}
 			const kid = decodedJWT.header.kid;
 			if(kid !== undefined){
 				if (Object.keys(pems).includes(kid)) {
 					console.log("Verificado")
-					//return res.status(401).end();
 				}
 				const pem = pems[kid];
 				jwt.verify(token, pem, { algorithms: ['RS256'] }, function (err:any) {
 					if (err) {
-						res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid 2' });
+						res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid' });
 						console.log("Error 2")
 					} else {
 						req.user = decodedJWT.payload.username;
@@ -50,7 +60,7 @@ class AuthMiddleware {
 				});
 				return;
 			}else{
-				res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid 3' });
+				res.status(401).send({ code: 'InvalidTokenException', message: 'The token is not valid' });
 			}		
 			
 		} else {
